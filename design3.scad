@@ -17,7 +17,7 @@ $fn = 48;
 
 // --- RENDER SELECTION ---
 // Options: "body"
-part_to_render = "body";
+part_to_render = "exploded_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -189,10 +189,57 @@ module body_solid() {
         body_core(0);
 }
 
+// ------------------------------------------------------------
+// HOLLOW SHELL
+// ------------------------------------------------------------
+// Inner cavity = the outer body surface shrunk inward by 'wall' everywhere.
+// Built the same way as body_solid() but with an extra 'wall' of shrink, so a
+// uniform wall thickness is left all around (including the ends).
+wall = 1.5;   // shell wall thickness (mm)
+
+module inner_cavity() {
+    if (grip_round > 0)
+        minkowski() {
+            body_core(grip_round + wall);
+            sphere(r = grip_round, $fn = 24);
+        }
+    else
+        body_core(wall);
+}
+
+module body_hollow() {
+    difference() {
+        body_solid();
+        inner_cavity();
+    }
+}
+
+// ------------------------------------------------------------
+// SPLIT INTO LEFT / RIGHT SHELLS (along Y = 0)
+// ------------------------------------------------------------
+// Big half-space cubes to keep one side of the split plane.
+module keep_left()  { translate([-300, 0, -300]) cube([600, 300, 600]); }   // Y >= 0
+module keep_right() { translate([-300, -300, -300]) cube([600, 300, 600]); } // Y <= 0
+
+module left_shell()  { intersection() { body_hollow(); keep_left();  } }
+module right_shell() { intersection() { body_hollow(); keep_right(); } }
+
 // --- EXECUTION ---
 if (part_to_render == "body") {
     body_solid();
 } else if (part_to_render == "body_potmark") {
     body_solid();
     color("Crimson") pot_location_marker();
+} else if (part_to_render == "hollow") {
+    body_hollow();
+} else if (part_to_render == "left_shell") {
+    left_shell();
+} else if (part_to_render == "right_shell") {
+    right_shell();
+} else if (part_to_render == "exploded_assembly") {
+    color("LightSteelBlue") translate([0,  6, 0]) left_shell();
+    color("SlateGray")      translate([0, -6, 0]) right_shell();
+} else if (part_to_render == "closed_assembly") {
+    color("LightSteelBlue") left_shell();
+    color("SlateGray")      right_shell();
 }

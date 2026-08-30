@@ -57,13 +57,13 @@ outline_points = [
   [-12.81, 1.12]
 ];
 
-// path[0] = outer body, path[1] = small pivot hole.
-// (The original finger slot path has been removed so the head is solid there;
-//  its points remain below but are simply not referenced by any path.)
+// path[0] = outer body only. The small pivot hole (points 44-48) is NOT
+// referenced here: we keep the body solid and drill the pivot as a proper
+// hole later when the trigger is designed (see pivot_pos below). Leaving it in
+// the outline made minkowski() distort it into a slot.
 outline_paths = [
   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-   20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33],
-  [44, 45, 46, 47, 48]
+   20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
 ];
 
 module outline_2d() {
@@ -111,6 +111,17 @@ pot_axis_angle = -51.1;           // angle of the slot from +X in the X-Z plane 
 pot_axis_mid   = [ (pot_axis_rear[0]+pot_axis_front[0])/2,
                    (pot_axis_rear[1]+pot_axis_front[1])/2 ];  // = ~[-46.5, -11.6]
 
+// ------------------------------------------------------------
+// TRIGGER PIVOT LOCATION (was a small hole in the original outline)
+// ------------------------------------------------------------
+// The original STL had a small hole here for the trigger-lever pivot pin.
+// We keep the body solid for now and record the location as data; the pivot
+// will be drilled as a proper hole through both shells when the trigger is
+// designed. Centre is in the outline X-Z plane, on Y=0 (through the thickness).
+pivot_pos = [-12.81, 1.92];   // [X, Z] centre of the trigger pivot
+pivot_dia = 4.0;              // intended pivot pin diameter (mm) — bigger than
+                              // the ~1.9mm marker in the source STL
+
 // Visualises the recorded pot axis (for debugging / placing the mount later).
 module pot_location_marker() {
     // rod along the slot centerline
@@ -152,15 +163,30 @@ module thickness_mask(inset = 0) {
 
 // ------------------------------------------------------------
 // SOLID BODY: outline extruded thick, then trimmed to the taper.
+// The whole body is softened by grip_round so the edges the hand wraps are
+// comfortable. Implemented by building the body slightly undersized (mask and
+// extrude reduced by grip_round) then minkowski()-growing it back with a
+// sphere, which fillets ALL edges by grip_round while preserving net size.
 // ------------------------------------------------------------
-module body_solid() {
+grip_round = 3.0;   // edge rounding radius (mm); 0 disables rounding
+
+module body_core(shrink = 0) {
     intersection() {
-        // Extrude the oriented outline to more than head_thick, centred on Y.
         rotate([90, 0, 0])
-            linear_extrude(height = head_thick + 10, center = true)
-                raised_outline_2d();
-        thickness_mask(0);
+            linear_extrude(height = head_thick + 10 - 2*shrink, center = true)
+                offset(r = -shrink) raised_outline_2d();
+        thickness_mask(-2*shrink);   // shrink Y by 'shrink' on each side
     }
+}
+
+module body_solid() {
+    if (grip_round > 0)
+        minkowski() {
+            body_core(grip_round);
+            sphere(r = grip_round, $fn = 24);
+        }
+    else
+        body_core(0);
 }
 
 // --- EXECUTION ---

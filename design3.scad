@@ -370,6 +370,38 @@ module thumb_button_cut() {
             cylinder(h = thumb_drill, d = thumb_dia, center = true);
 }
 
+// --- CABLE EXIT (rear-bottom of the grip butt, on the split) ---
+// A round hole for the controller cable, on the Y=0 split (semicircle per half),
+// at the rear-bottom of the grip, drilled along the local surface normal
+// (measured ~ (0.40, 0, -0.92), i.e. down-and-back).
+cable_pos    = [ 65, 12 ];          // [X, Z] centre on the rear of the grip butt
+cable_dia    = 7.0;                 // cable exit hole diameter
+cable_normal = [ 0.78, 0, 0.62 ];   // measured outward surface normal (back-up)
+cable_drill  = 30;                  // drill length through the wall
+
+// Round cutter along an arbitrary local normal at [X,0,Z], starting just outside
+// the surface and running inward. Centred on Y=0 so keep_left/keep_right split
+// it into a semicircle per shell.
+module normal_hole(pos, dia, nrm, drill) {
+    n   = nrm / norm(nrm);
+    ax0 = cross([0,1,0], n);
+    ax  = ax0 / norm(ax0);
+    ay  = cross(n, ax);
+    translate([pos[0], 0, pos[1]])
+        multmatrix([
+            [ ax[0], ay[0], n[0], 0 ],
+            [ ax[1], ay[1], n[1], 0 ],
+            [ ax[2], ay[2], n[2], 0 ],
+            [ 0,     0,     0,    1 ],
+        ])
+        translate([0, 0, 5 - drill/2])
+            cylinder(h = drill, d = dia, center = true);
+}
+
+module cable_exit_cut() {
+    normal_hole(cable_pos, cable_dia, cable_normal, cable_drill);
+}
+
 // ------------------------------------------------------------
 // TRIGGER LEVER (pivots at pivot_pos; blade exits the throat; actuator arm
 // reaches the pot lever). All in the X-Z plane, extruded in Y and centred so it
@@ -754,6 +786,7 @@ module left_shell() {
         trigger_throat_cut();
         panel_cuts_left();
         thumb_button_cut();
+        cable_exit_cut();
     }
 }
 
@@ -781,6 +814,7 @@ module right_shell() {
         trigger_throat_cut();
         panel_cuts_right();
         thumb_button_cut();
+        cable_exit_cut();
     }
 }
 

@@ -69,6 +69,9 @@ mounts yet):
     lower-front surface at `thumb_pos`, drilled along the local surface normal
     (`thumb_normal`). It sits ON the Y = 0 split, so it is halved into a matching
     semicircle in each shell.
+13. **Cable exit** — a 7 mm hole (`cable_exit_cut()`) on the rear of the grip
+    butt at `cable_pos`, drilled along the local surface normal (`cable_normal`,
+    back-and-up), also on the Y = 0 split (semicircle per shell).
 
 ### Key parameters (top of `design3.scad`)
 
@@ -113,6 +116,9 @@ mounts yet):
 - `thumb_pos`, `thumb_dia`, `thumb_normal`, `thumb_drill` — thumb-button hole
   centre `[X,Z]`, diameter (6 mm), local surface normal, and drill depth. The
   hole is centred on Y = 0 so it splits into a semicircle per shell.
+- `cable_pos`, `cable_dia`, `cable_normal`, `cable_drill` — cable-exit hole
+  centre `[X,Z]`, diameter (7 mm), local surface normal, and drill depth. Also
+  centred on Y = 0 (semicircle per shell). Uses the shared `normal_hole()` helper.
 - `part_to_render` — `body`, `body_potmark`, `pot_debug`, `hollow`, `left_shell`,
   `right_shell`, `trigger`, `panel_debug`, `partial_exploded_assembly`,
   `closed_assembly`, `exploded_assembly`.
@@ -213,7 +219,12 @@ orthographic view (best for judging profiles).
    rod share one `rod_dia = 3 mm` stock. Render via `part_to_render = "trigger"`
    or see it in the assemblies.
 
-7. **Cable exit** at the base of the grip (rear/bottom of the butt).
+7. ~~**Cable exit** at the base of the grip (rear/bottom of the butt).~~ **DONE**
+   — a `7 mm` hole (`cable_exit_cut()`) on the rear of the grip butt at
+   `cable_pos = [65, 12]`, drilled along the local surface normal
+   (`cable_normal`, back-and-up). It sits ON the Y = 0 split, so it is halved
+   into a semicircle per shell (shares the `normal_hole()` helper with the thumb
+   button).
 
 8. **Validate & export.**
    - `validate_scad` / build with no CGAL errors.

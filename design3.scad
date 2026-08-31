@@ -13,7 +13,7 @@ $fn = 48;
 // --- RENDER SELECTION ---
 // Options: "left_shell", "right_shell", "trigger", "export_stl",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "closed_assembly";
+part_to_render = "partial_exploded_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -333,19 +333,29 @@ module thumb_button_cut() {
             cylinder(h = thumb_drill, d = thumb_dia, center = true);
 }
 
-// --- CABLE EXIT (rear-bottom of the grip butt, on the split) ---
-// A round hole for the controller cable, on the Y=0 split (semicircle per half),
-// at the rear-bottom of the grip, drilled along the local surface normal
-// (measured ~ (0.40, 0, -0.92), i.e. down-and-back).
+// --- DX16 CONNECTOR (rear of the grip butt) ---
+// A DX16 aviation socket (16mm hole, 7mm thread, retained by an inner nut) needs
+// a FLAT full-thickness pad, not a split semicircle. So we mould a round flat
+// pad into the LEFT shell, centred on the Y=0 line, that crosses the split into
+// the RIGHT shell (which gets a matching recess). The socket goes in from
+// outside; the nut tightens on the inside flat.
 cable_pos    = [ 65, 12 ];          // [X, Z] centre on the rear of the grip butt
-cable_dia    = 7.0;                 // cable exit hole diameter
-cable_normal = [ 0.78, 0, 0.62 ];   // measured outward surface normal (back-up)
-cable_drill  = 30;                  // drill length through the wall
+cable_normal = [ 0.78, 0, 0.62 ];   // outward surface normal (back-up)
+conn_hole_dia = 16.0;               // DX16 panel hole
+conn_pad_dia  = 19.0;               // flat mounting pad (round)
+conn_pad_proud = 2.0;               // pad thickness proud of the surface (<= thread)
+conn_pad_y    = 5.0;                // total pad length (2mm proud + 3mm inward)
+conn_recess_clear = 0.3;            // clearance around the pad in the right-shell recess
+// Internal reinforcement collar: thickens the wall locally around the socket so
+// the Ø16 hole has more material to grip (strength). Reaches inward from the
+// surface; the hole bores through it. Crosses the seam like the pad.
+conn_reinf_dia = 28.0;              // collar outer diameter
+conn_reinf_len = 3.0;               // inward reach (kept short so the thread still
+                                    // projects through for the nut)
 
-// Round cutter along an arbitrary local normal at [X,0,Z], starting just outside
-// the surface and running inward. Centred on Y=0 so keep_left/keep_right split
-// it into a semicircle per shell.
-module normal_hole(pos, dia, nrm, drill) {
+// Transform: origin at the surface point [X,0,Z], local +Z along the OUTWARD
+// normal. Children built at +Z sit outside; at -Z go inward.
+module normal_place(pos, nrm) {
     n   = nrm / norm(nrm);
     ax0 = cross([0,1,0], n);
     ax  = ax0 / norm(ax0);
@@ -357,12 +367,39 @@ module normal_hole(pos, dia, nrm, drill) {
             [ ax[2], ay[2], n[2], 0 ],
             [ 0,     0,     0,    1 ],
         ])
-        translate([0, 0, 5 - drill/2])
-            cylinder(h = drill, d = dia, center = true);
+            children();
 }
 
-module cable_exit_cut() {
-    normal_hole(cable_pos, cable_dia, cable_normal, cable_drill);
+// Flat round pad, proud of the surface by conn_pad_proud and reaching inward,
+// coaxial with the connector hole. (Trimmed to fuse with the body by the caller.)
+module connector_pad(extra = 0) {
+    normal_place(cable_pos, cable_normal)
+        translate([0, 0, conn_pad_proud - conn_pad_y])
+            cylinder(h = conn_pad_y, d = conn_pad_dia + 2*extra, center = false);
+}
+// Ø16 through-hole along the normal (from outside the pad, well through the wall).
+module connector_hole() {
+    normal_place(cable_pos, cable_normal)
+        translate([0, 0, -25 + conn_pad_proud])
+            cylinder(h = 40, d = conn_hole_dia, center = false);
+}
+// Recess in the RIGHT shell for the pad to nest into (pad shape + clearance).
+module connector_recess() {
+    connector_pad(conn_recess_clear);
+}
+
+// Internal reinforcing collar around the socket (adds material inward from the
+// surface). Trimmed to the body so it never protrudes outside; the hole bores
+// through it. Kept in the LEFT half only (clipped at the seam) so it thickens
+// the left wall without removing material from the right shell.
+module connector_reinforce() {
+    intersection() {
+        normal_place(cable_pos, cable_normal)
+            translate([0, 0, -conn_reinf_len])
+                cylinder(h = conn_reinf_len + 0.01, d = conn_reinf_dia, center = false);
+        body_solid();
+        keep_left();
+    }
 }
 
 // ------------------------------------------------------------
@@ -675,7 +712,7 @@ spigot_clear     = 0.2;   // fit clearance for the counterbore
 // [X, Z] screw/boss locations (in the outline plane). Placed at corners /
 // perimeter, kept CLEAR of the trigger<->pot armature path through the head
 // centre. Verified inside the body with margin.
-screw_boss_pos = [ [10, -13], [68, -1], [55, 17], [-31, 18], [-80, -3], [-45, -45] ];
+screw_boss_pos = [ [10, -13], [63, -5], [48, 15], [-31, 18], [-80, -3], [-45, -45] ];
 
 // One screw-boss column (solid), centred on Y=0, spanning the full thickness.
 module boss_column(p) {
@@ -742,15 +779,21 @@ module spigot_bores() {
 // bolt-head recess (outer +Y face) and the spigot counterbores.
 module left_shell() {
     difference() {
-        intersection() {
-            union() {
-                body_hollow();
-                intersection() { all_boss_columns(); body_solid(); }
-                pot_mount_add();
-                pivot_boss(1);
-                spring_boss(1);
+        union() {
+            intersection() {
+                union() {
+                    body_hollow();
+                    intersection() { all_boss_columns(); body_solid(); }
+                    pot_mount_add();
+                    pivot_boss(1);
+                    spring_boss(1);
+                }
+                keep_left();
             }
-            keep_left();
+            // DX16 pad: full disc on the left shell, deliberately crossing the
+            // seam into -Y (the right shell has a matching recess).
+            connector_pad();
+            connector_reinforce();
         }
         screw_holes();
         head_recesses();
@@ -761,7 +804,7 @@ module left_shell() {
         trigger_throat_cut();
         panel_cuts_left();
         thumb_button_cut();
-        cable_exit_cut();
+        connector_hole();
     }
 }
 
@@ -789,7 +832,8 @@ module right_shell() {
         trigger_throat_cut();
         panel_cuts_right();
         thumb_button_cut();
-        cable_exit_cut();
+        connector_recess();   // clearance for the left-shell pad crossing the seam
+        connector_hole();
     }
 }
 

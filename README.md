@@ -70,9 +70,15 @@ mounts yet):
     lower-front surface at `thumb_pos`, drilled along the local surface normal
     (`thumb_normal`). It sits ON the Y = 0 split, so it is halved into a matching
     semicircle in each shell.
-13. **Cable exit** — a 7 mm hole (`cable_exit_cut()`) on the rear of the grip
-    butt at `cable_pos`, drilled along the local surface normal (`cable_normal`,
-    back-and-up), also on the Y = 0 split (semicircle per shell).
+13. **DX16 connector** — a panel-mount aviation socket (16 mm hole, 7 mm thread,
+    inner retaining nut) on the rear of the grip butt at `cable_pos`, drilled
+    along the local surface normal. Because a threaded connector needs a flat
+    full-thickness seat (not a split semicircle), it uses a moulded round **pad**
+    (`connector_pad()`, Ø19, 2 mm proud + 3 mm in) on the LEFT shell that crosses
+    the seam so the hole stays centred; the RIGHT shell has a matching recess
+    (`connector_recess()`). An internal **reinforcing collar**
+    (`connector_reinforce()`, LEFT half only) thickens the wall around the socket
+    for strength. The Ø16 bore (`connector_hole()`) cuts through both halves.
 
 ### Key parameters (top of `design3.scad`)
 
@@ -120,9 +126,12 @@ mounts yet):
 - `thumb_pos`, `thumb_dia`, `thumb_normal`, `thumb_drill` — thumb-button hole
   centre `[X,Z]`, diameter (6 mm), local surface normal, and drill depth. The
   hole is centred on Y = 0 so it splits into a semicircle per shell.
-- `cable_pos`, `cable_dia`, `cable_normal`, `cable_drill` — cable-exit hole
-  centre `[X,Z]`, diameter (7 mm), local surface normal, and drill depth. Also
-  centred on Y = 0 (semicircle per shell). Uses the shared `normal_hole()` helper.
+- `cable_pos`, `cable_normal` — DX16 connector centre `[X,Z]` on the grip butt
+  and its local outward surface normal (the drilling / socket axis).
+- `conn_hole_dia`, `conn_pad_dia`, `conn_pad_proud`, `conn_pad_y` — DX16 bore
+  (16 mm), pad diameter (19 mm), pad proud height, and total pad length.
+- `conn_reinf_dia`, `conn_reinf_len` — internal reinforcing collar diameter /
+  inward depth (LEFT half only). `conn_recess_clear` — right-shell recess fit.
 - `part_to_render` — `left_shell`, `right_shell`, `trigger`, `export_stl`,
   `partial_exploded_assembly`, `closed_assembly`, `exploded_assembly`.
 
@@ -219,12 +228,15 @@ orthographic view (best for judging profiles).
    rod share one `rod_dia = 3 mm` stock. Render via `part_to_render = "trigger"`
    or see it in the assemblies.
 
-7. ~~**Cable exit** at the base of the grip (rear/bottom of the butt).~~ **DONE**
-   — a `7 mm` hole (`cable_exit_cut()`) on the rear of the grip butt at
-   `cable_pos = [65, 12]`, drilled along the local surface normal
-   (`cable_normal`, back-and-up). It sits ON the Y = 0 split, so it is halved
-   into a semicircle per shell (shares the `normal_hole()` helper with the thumb
-   button).
+7. ~~**Cable exit / connector** at the base of the grip.~~ **DONE** — a
+   panel-mount **DX16** aviation socket on the rear of the grip butt at
+   `cable_pos = [65, 12]`, along the local surface normal. Since a threaded
+   connector needs a flat full-thickness seat, it is NOT a split semicircle:
+   instead a moulded round **pad** (`connector_pad()`, Ø19, 2 mm proud + 3 mm in)
+   on the LEFT shell crosses the seam so the Ø16 hole stays centred, the RIGHT
+   shell has a matching recess, and an internal **reinforcing collar**
+   (`connector_reinforce()`, LEFT half only) thickens the wall for strength. The
+   nut tightens on the inside; ~2 mm of the 7 mm thread projects past the pad.
 
 8. ~~**Validate & export.**~~ **DONE** — full CGAL renders (`grip_round = 3`,
    minkowski rounding) with no errors; each part is manifold (`Simple: yes`).

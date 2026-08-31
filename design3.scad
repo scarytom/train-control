@@ -17,7 +17,7 @@ $fn = 48;
 
 // --- RENDER SELECTION ---
 // Options: "body"
-part_to_render = "left_shell";
+part_to_render = "partial_exploded_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -248,6 +248,142 @@ module pot_location_marker() {
 }
 
 // ------------------------------------------------------------
+// TRIGGER LEVER (pivots at pivot_pos; blade exits the throat; actuator arm
+// reaches the pot lever). All in the X-Z plane, extruded in Y and centred so it
+// lives in the clear channel at the split plane.
+// ------------------------------------------------------------
+trigger_thick   = 6.0;    // Y thickness of the trigger lever (mm)
+trigger_pin_dia = pivot_dia;          // pivot pin diameter (matches body hole)
+trigger_bore    = pivot_dia + 0.4;    // pivot bore in the trigger (running fit)
+trigger_hub_dia = 10.0;   // hub diameter around the pivot
+// Blade: exits the throat at trigger_exit and extends OUTSIDE the body up-and-
+// forward (+X, +Z) at ~45 deg for the finger to pull.
+trigger_blade_len = 25.0;             // blade length beyond the exit (mm)
+trigger_blade_ang = 45;               // direction from the exit, deg (+X,+Z)
+trigger_blade_tip = [ trigger_exit[0] + trigger_blade_len*cos(trigger_blade_ang),
+                      trigger_exit[1] + trigger_blade_len*sin(trigger_blade_ang) ];
+trigger_blade_w   = 7.0;        // blade width
+// Actuator arm: a STRAIGHT run from the pivot to the pot lever engagement point
+// (roughly opposite the blade). Longer + fatter, with a FORK slot cut right
+// through the tip so it straddles the pot lever and drives it both ways.
+trigger_arm_aim   = [-40, -19]; // aim point along the arm direction (~pot centre)
+trigger_arm_extra = 4.0;        // extend the arm this far past the aim point (mm)
+// arm tip = aim point pushed further along the pivot->aim direction by extra
+trigger_arm_end   = let(
+        dx = trigger_arm_aim[0] - pivot_pos[0],
+        dz = trigger_arm_aim[1] - pivot_pos[1],
+        L  = sqrt(dx*dx + dz*dz)
+    ) [ trigger_arm_aim[0] + trigger_arm_extra*dx/L,
+        trigger_arm_aim[1] + trigger_arm_extra*dz/L ];
+trigger_arm_w     = 10.0;       // arm width (fatter)
+trigger_arm_pad   = 12.0;       // diameter of the forked tip pad
+trigger_fork_slot = 4.5;        // fork slot width (fits the ~3mm pot lever)
+trigger_fork_len  = 6.0;        // elongated slot length along the arm (kept
+                                // inside the tip pad so it's an enclosed hole)
+trigger_fork_pivot_ext = 7.0;   // extend the slot this far toward the pivot end
+
+// 2D trigger profile in the X-Z plane (before extrude).
+module trigger_profile_2d() {
+    difference() {
+        union() {
+            // pivot hub
+            translate(pivot_pos) circle(d = trigger_hub_dia);
+            // blade: hub -> throat exit -> finger tab
+            hull() {
+                translate(pivot_pos) circle(d = trigger_blade_w);
+                translate(trigger_exit) circle(d = trigger_blade_w);
+            }
+            hull() {
+                translate(trigger_exit) circle(d = trigger_blade_w);
+                translate(trigger_blade_tip) circle(d = trigger_blade_w);
+            }
+            // actuator arm: hub -> pot engagement pad
+            hull() {
+                translate(pivot_pos) circle(d = trigger_arm_w);
+                translate(trigger_arm_end) circle(d = trigger_arm_pad);
+            }
+        }
+        // pivot bore
+        translate(pivot_pos) circle(d = trigger_bore);
+    }
+}
+
+// The 3D trigger lever, centred on Y=0, thickness trigger_thick, with a FORK
+// slot cut into the actuator tip so it straddles the pot lever.
+module trigger_lever() {
+    // arm direction angle (pivot -> tip), for orienting the slot along the arm
+    arm_ang = atan2(trigger_arm_end[1] - pivot_pos[1],
+                    trigger_arm_end[0] - pivot_pos[0]);
+    difference() {
+        rotate([90, 0, 0])
+            linear_extrude(height = trigger_thick, center = true)
+                trigger_profile_2d();
+        // Fork slot at the arm tip: an ENCLOSED elongated (obround) hole. It is
+        // elongated ALONG THE ARM (radially from the pivot) so the pot lever
+        // slides along the slot as the arm swings. Cut right through the arm
+        // thickness (centred on Y=0), staying inside the tip pad so it does NOT
+        // break out of the end.
+        translate([trigger_arm_end[0], 0, trigger_arm_end[1]])
+            rotate([0, -arm_ang, 0])             // align long axis with the arm
+                rotate([90, 0, 0])               // extrude along Y (through the arm)
+                    linear_extrude(height = trigger_thick + 4, center = true)
+                        hull() {
+                            // tip-side end (unchanged); pivot-side end extended
+                            // by trigger_fork_pivot_ext toward the pivot (local -X).
+                            translate([ trigger_fork_len/2, 0]) circle(d = trigger_fork_slot);
+                            translate([-trigger_fork_len/2 - trigger_fork_pivot_ext, 0])
+                                circle(d = trigger_fork_slot);
+                        }
+    }
+}
+
+// Pivot support: a BOSS on each half around the pivot axis, with a BLIND bore
+// for a short metal pivot rod captured between the halves. The trigger's hub
+// (trigger_thick wide, centred on Y=0) rotates in the gap between the bosses.
+pivot_boss_dia  = 10.0;               // pivot boss diameter
+pivot_hub_gap   = trigger_thick/2 + 0.5;  // Y where the boss stops (clear of hub)
+pivot_bore_dia  = pivot_dia + 0.3;    // rod bore (running fit)
+pivot_bore_depth = 8.0;               // blind bore depth into each boss
+
+// side = +1 -> +Y (left) half, -1 -> -Y (right) half.
+module pivot_boss(side) {
+    // boss column from the hub gap outward to well past the outer wall,
+    // trimmed to the body so it fuses to the wall.
+    intersection() {
+        translate([pivot_pos[0], side*pivot_hub_gap, pivot_pos[1]])
+            rotate([side>0 ? -90 : 90, 0, 0])
+                cylinder(h = head_thick, d = pivot_boss_dia);
+        body_solid();
+    }
+}
+// Blind bore for the rod: from the hub-gap face inward (outward in Y) by depth.
+module pivot_bore(side) {
+    translate([pivot_pos[0], side*pivot_hub_gap, pivot_pos[1]])
+        rotate([side>0 ? -90 : 90, 0, 0])
+            cylinder(h = pivot_bore_depth, d = pivot_bore_dia);
+}
+
+// Throat cutout: a slot in the body at the throat so the blade can pass through
+// the wall and swing. Spans from the pivot out just past the exit point (a bit
+// beyond, for swing clearance) — NOT out to the far finger tip. Slightly wider
+// than the blade, spanning the trigger thickness + clearance.
+module trigger_throat_cut() {
+    slot_w = trigger_blade_w + 3;      // clearance around the blade
+    slot_t = trigger_thick + 2;        // Y clearance
+    // a short extension past the exit along the blade direction, for swing room
+    ext = [ trigger_exit[0] + 6*cos(trigger_blade_ang),
+            trigger_exit[1] + 6*sin(trigger_blade_ang) ];
+    hull() {
+        translate([pivot_pos[0], 0, pivot_pos[1]])
+            rotate([90,0,0]) cylinder(h=slot_t, d=slot_w, center=true);
+        translate([trigger_exit[0], 0, trigger_exit[1]])
+            rotate([90,0,0]) cylinder(h=slot_t, d=slot_w, center=true);
+        translate([ext[0], 0, ext[1]])
+            rotate([90,0,0]) cylinder(h=slot_t, d=slot_w, center=true);
+    }
+}
+
+// ------------------------------------------------------------
 // THICKNESS MASK: full head_thick over the head (-X), tapering to
 // grip_thick over the grip (+X). Generous in X and Z; only Y varies.
 // 'inset' shrinks Y on both sides (use -2*wall for inner cavity later).
@@ -444,6 +580,7 @@ module left_shell() {
                 body_hollow();
                 intersection() { all_boss_columns(); body_solid(); }
                 pot_mount_add();
+                pivot_boss(1);
             }
             keep_left();
         }
@@ -451,6 +588,8 @@ module left_shell() {
         head_recesses();
         spigot_bores();
         pot_mount_cut();
+        pivot_bore(1);
+        trigger_throat_cut();
     }
 }
 
@@ -463,6 +602,7 @@ module right_shell() {
                 union() {
                     body_hollow();
                     intersection() { all_boss_columns(); body_solid(); }
+                    pivot_boss(-1);
                 }
                 keep_right();
             }
@@ -471,6 +611,8 @@ module right_shell() {
         screw_holes();
         nut_recesses();
         pot_lever_slot();   // clearance for the pot lever that crosses the split
+        pivot_bore(-1);
+        trigger_throat_cut();
     }
 }
 
@@ -489,10 +631,17 @@ if (part_to_render == "body") {
     left_shell();
 } else if (part_to_render == "right_shell") {
     right_shell();
+} else if (part_to_render == "trigger") {
+    trigger_lever();
+} else if (part_to_render == "partial_exploded_assembly") {
+    color("LightSteelBlue") translate([0,  6, 0]) left_shell();
+    color("Crimson")        trigger_lever();
 } else if (part_to_render == "exploded_assembly") {
     color("LightSteelBlue") translate([0,  6, 0]) left_shell();
     color("SlateGray")      translate([0, -6, 0]) right_shell();
+    color("Crimson")        trigger_lever();
 } else if (part_to_render == "closed_assembly") {
     color("LightSteelBlue") left_shell();
     color("SlateGray")      right_shell();
+    color("Crimson")        trigger_lever();
 }

@@ -251,6 +251,96 @@ module pot_location_marker() {
 }
 
 // ------------------------------------------------------------
+// BUTTON / SWITCH PANEL on the raised blue face (edge 30->31, raised)
+// ------------------------------------------------------------
+// Frame built directly from the FOUR CORNERS of the blue face (given as ground
+// truth). No angle guessing. The local frame at the face:
+//   +u (local X) = along the face edge in X-Z (toward the low-Z / +X corner)
+//   +v (local Y) = along the face's Y direction (~ global +Y; left half = +Y)
+//    n (local Z) = OUTWARD face normal (= uedge x uy). A child built at +Z sits
+//                  outside the face; cutters extend along -Z to drill inward.
+// panel_face_place(u,v) places a child at (u,v) mm on the face in this frame.
+// Corners: TL(+Y,Zhi) TR(+Y,Zlo) BL(-Y,Zhi) BR(-Y,Zlo)
+bf_TL = [ -85,  30,   0 ];
+bf_TR = [ -48,  30, -50 ];
+bf_BL = [ -88, -30,   0 ];
+bf_BR = [ -48, -30, -50 ];
+
+bf_center = (bf_TL + bf_TR + bf_BL + bf_BR) / 4;
+function _unit(v) = v / norm(v);
+bf_uedge = _unit(((bf_TR - bf_TL) + (bf_BR - bf_BL)) / 2);  // +u toward Zlo/+X
+bf_uy    = _unit(((bf_TL - bf_BL) + (bf_TR - bf_BR)) / 2);  // +v toward +Y
+bf_n     = _unit(cross(bf_uedge, bf_uy));                   // outward normal
+// keep for the debug view
+button_face_mid = [ bf_center[0], bf_center[2] ];
+dbg_rot = 90 - atan2(bf_uedge[2], bf_uedge[0]);  // panel_debug Y-rotation (overridable)
+
+module panel_face_place(u, v) {
+    // columns: local X = uedge, local Y = uy, local Z = outward normal, + origin
+    multmatrix([
+        [ bf_uedge[0], bf_uy[0], bf_n[0], bf_center[0] ],
+        [ bf_uedge[1], bf_uy[1], bf_n[1], bf_center[1] ],
+        [ bf_uedge[2], bf_uy[2], bf_n[2], bf_center[2] ],
+        [ 0,           0,        0,       1            ],
+    ])
+    translate([u, v, 0])
+        children();
+}
+
+// --- switch / meter parameters ---
+toggle_hole_dia = 6.2;   // 6mm bushing + clearance
+panel_drill     = 30;    // how far the drill cylinder runs (through the wall)
+
+// The 4 toggles sit on the LEFT (+v) half of the face. They must stay clear of
+// the two bolt bosses that pass under the face at u=-25 and u=+29 (which span
+// the full Y), so all switches live in the clear window u in [-18, +22].
+// Layout: MASTER on its own upper row; HORN / REVERSE / LIGHTS in a lower row.
+toggle_master_u   = 2;                 // master switch u (upper row)
+toggle_master_v   = 20;                // master switch v (nearer the +Y edge)
+toggle_row_u      = [ -13, 2, 17 ];    // horn / reverse / lights u (lower row, 15mm pitch)
+toggle_row_v      = 7;                 // lower-row v (nearer the split)
+
+// meter (right half)
+meter_slot_l = 25.5;     // slot length
+meter_slot_w = 2.2;      // slot width
+meter_end_holes = 3.5;   // end hole diameter
+meter_hole_span = 33;    // distance between the two end holes
+meter_v_right   = -19;   // Y offset into the RIGHT (-Y) half
+meter_u         = 0;     // along-edge position of the meter centre
+
+// A single round toggle mounting hole. The drill starts slightly OUTSIDE the
+// face (local +Z = outward) and runs inward (-Z) through the wall, so it always
+// fully penetrates regardless of small origin offsets.
+module toggle_hole(u, v) {
+    panel_face_place(u, v)
+        // span local z from +5 (outside) to +5 - panel_drill (inside)
+        translate([0, 0, 5 - panel_drill/2])
+            cylinder(h = panel_drill, d = toggle_hole_dia, center = true);
+}
+
+// LED battery-meter cutout: central slot + two end holes, on the face at meter_u.
+module meter_cutout(u, v) {
+    panel_face_place(u, v)
+        translate([0, 0, 5 - panel_drill/2]) {
+            // central rectangular slot (square corners)
+            cube([meter_slot_l, meter_slot_w, panel_drill], center = true);
+            // two end holes, meter_hole_span apart, centred on the slot line
+            translate([ meter_hole_span/2, 0, 0]) cylinder(h = panel_drill, d = meter_end_holes, center = true);
+            translate([-meter_hole_span/2, 0, 0]) cylinder(h = panel_drill, d = meter_end_holes, center = true);
+        }
+}
+
+// All panel cuts for the LEFT half (the 4 toggles, in two rows).
+module panel_cuts_left() {
+    toggle_hole(toggle_master_u, toggle_master_v);   // master (upper row)
+    for (u = toggle_row_u) toggle_hole(u, toggle_row_v);  // horn / reverse / lights
+}
+// All panel cuts for the RIGHT half (the LED meter).
+module panel_cuts_right() {
+    meter_cutout(meter_u, meter_v_right);
+}
+
+// ------------------------------------------------------------
 // TRIGGER LEVER (pivots at pivot_pos; blade exits the throat; actuator arm
 // reaches the pot lever). All in the X-Z plane, extruded in Y and centred so it
 // lives in the clear channel at the split plane.
@@ -632,6 +722,7 @@ module left_shell() {
         pivot_bore(1);
         spring_bore(1);
         trigger_throat_cut();
+        panel_cuts_left();
     }
 }
 
@@ -657,6 +748,7 @@ module right_shell() {
         pivot_bore(-1);
         spring_bore(-1);
         trigger_throat_cut();
+        panel_cuts_right();
     }
 }
 
@@ -688,4 +780,12 @@ if (part_to_render == "body") {
     color("LightSteelBlue") left_shell();
     color("SlateGray")      right_shell();
     color("Crimson")        trigger_lever();
+} else if (part_to_render == "panel_debug") {
+    // Rotate the whole assembly so the blue face normal points to +Z, so a
+    // plain top view (--camera=0,0,300,0,0,0 --projection=o) shows the panel
+    // flat-on with the toggle holes (+Y) and meter slot (-Y).
+    rotate([0, dbg_rot, 0]) {
+        color("LightSteelBlue") left_shell();
+        color("SlateGray")      right_shell();
+    }
 }

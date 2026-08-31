@@ -59,6 +59,12 @@ mounts yet):
     The pivot pin and spring anchor share a 3 mm rod (`rod_dia`), each captured
     in blind-bore bosses. A return spring hooks a hole in the armature and a
     rod in a body anchor boss, pulling the trigger to rest. See next-steps #6.
+11. **Control panel** — holes drilled into the raised blue face along its normal
+    via a face frame built from the face's four corners (`panel_face_place`). The
+    LEFT half has four 6 mm toggle holes (master on its own row; horn / reverse /
+    lights in a row at 15 mm pitch); the RIGHT half has the LED battery-meter
+    cutout (square 25.5 × 2.2 mm slot + two 3.5 mm end holes, 33 mm apart). All
+    clear of the bolt bosses. See next-steps #5.
 
 ### Key parameters (top of `design3.scad`)
 
@@ -93,9 +99,16 @@ mounts yet):
 - `spring_trigger_pos`, `spring_hole_dia` — spring hook hole in the armature.
 - `spring_anchor_pos`, `spring_boss_dia`, `spring_bore_depth` — body spring-anchor
   boss + blind bore for the captured rod.
+- `bf_TL`, `bf_TR`, `bf_BL`, `bf_BR` — the four corners of the blue panel face
+  (ground-truth coordinates); the `panel_face_place(u,v)` frame is built from them.
+- `toggle_hole_dia`, `panel_drill` — toggle hole diameter / drill depth.
+- `toggle_master_u`, `toggle_master_v` — master switch position (upper row).
+- `toggle_row_u`, `toggle_row_v` — horn / reverse / lights positions (lower row).
+- `meter_slot_l`, `meter_slot_w`, `meter_end_holes`, `meter_hole_span`,
+  `meter_u`, `meter_v_right` — LED battery-meter slot + end-hole geometry / placement.
 - `part_to_render` — `body`, `body_potmark`, `pot_debug`, `hollow`, `left_shell`,
-  `right_shell`, `trigger`, `partial_exploded_assembly`, `closed_assembly`,
-  `exploded_assembly`.
+  `right_shell`, `trigger`, `panel_debug`, `partial_exploded_assembly`,
+  `closed_assembly`, `exploded_assembly`.
 
 ### Recorded trigger pivot location (data only — no trigger yet)
 
@@ -171,10 +184,15 @@ orthographic view (best for judging profiles).
    sweep, and SEATS against a ledge. A 3 mm wire-exit gap sits at the pot's
    higher end. Cradle is left-half only; the right half gets just the lever slot.
 
-5. **Button / switch holes on the raised blue face.**
-   - Place holes on the ~50° button surface (normal = `button_face_normal`).
-   - Add hole diameter/pattern parameters; drill from the outside through the wall.
-   - Add wiring clearance / channels down to the electronics bay.
+5. ~~**Button / switch holes on the raised blue face.**~~ **DONE** — the control
+   panel is drilled into the raised blue face along the face normal, using a
+   local face frame (`panel_face_place(u,v)`) built directly from the face's four
+   corners. The LEFT half (`+Y`) carries **four 6 mm toggle holes**: the **master
+   switch on its own upper row** and **horn / reverse / lights in a lower row**
+   (15 mm pitch). The RIGHT half (`-Y`) carries the **LED battery-meter cutout**:
+   a square `25.5 × 2.2 mm` slot with a `3.5 mm` hole at each end, `33 mm` apart.
+   All holes stay clear of the two bolt bosses that pass under the face. Preview
+   the panel flat-on with `part_to_render = "panel_debug"` (top ortho view).
 
 6. ~~**Trigger + pivot.**~~ **DONE** — `trigger_lever()` pivots at `pivot_pos`
    with: a **finger blade** exiting the concave throat notch right next to the

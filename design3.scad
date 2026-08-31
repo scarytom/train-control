@@ -340,6 +340,36 @@ module panel_cuts_right() {
     meter_cutout(meter_u, meter_v_right);
 }
 
+// --- THUMB BUTTON (spine, on the split) ---
+// A 12mm push button in the MIDDLE of the controller (on the Y=0 split), so the
+// hole is halved into a semicircle in each shell. Drilled normal to the local
+// surface at thumb_pos (measured local normal ~ (-0.16, 0, -0.99), i.e. mostly
+// -Z with a slight -X tilt).
+thumb_pos      = [ 9, -32 ];        // [X, Z] centre on the surface
+thumb_dia      = 6.2;              // 6mm button + clearance (matches the toggles)
+thumb_normal   = [ -0.16, 0, -0.99 ];  // measured outward surface normal
+thumb_drill    = 30;               // drill length through the wall
+
+// Full round cutter (both halves see it; keep_left/keep_right split it into two
+// semicircles at Y=0). Built along the local normal, starting outside the face.
+module thumb_button_cut() {
+    // basis: align local +Z with thumb_normal
+    n  = thumb_normal / norm(thumb_normal);
+    // pick any in-plane axis: cross with global Y
+    ax0 = cross([0,1,0], n);
+    ax  = ax0 / norm(ax0);
+    ay  = cross(n, ax);
+    translate([thumb_pos[0], 0, thumb_pos[1]])
+        multmatrix([
+            [ ax[0], ay[0], n[0], 0 ],
+            [ ax[1], ay[1], n[1], 0 ],
+            [ ax[2], ay[2], n[2], 0 ],
+            [ 0,     0,     0,    1 ],
+        ])
+        translate([0, 0, 5 - thumb_drill/2])
+            cylinder(h = thumb_drill, d = thumb_dia, center = true);
+}
+
 // ------------------------------------------------------------
 // TRIGGER LEVER (pivots at pivot_pos; blade exits the throat; actuator arm
 // reaches the pot lever). All in the X-Z plane, extruded in Y and centred so it
@@ -638,7 +668,7 @@ spigot_clear     = 0.2;   // fit clearance for the counterbore
 // [X, Z] screw/boss locations (in the outline plane). Placed at corners /
 // perimeter, kept CLEAR of the trigger<->pot armature path through the head
 // centre. Verified inside the body with margin.
-screw_boss_pos = [ [11, -28], [68, -1], [55, 17], [-31, 18], [-80, -3], [-45, -45] ];
+screw_boss_pos = [ [10, -13], [68, -1], [55, 17], [-31, 18], [-80, -3], [-45, -45] ];
 
 // One screw-boss column (solid), centred on Y=0, spanning the full thickness.
 module boss_column(p) {
@@ -723,6 +753,7 @@ module left_shell() {
         spring_bore(1);
         trigger_throat_cut();
         panel_cuts_left();
+        thumb_button_cut();
     }
 }
 
@@ -749,6 +780,7 @@ module right_shell() {
         spring_bore(-1);
         trigger_throat_cut();
         panel_cuts_right();
+        thumb_button_cut();
     }
 }
 

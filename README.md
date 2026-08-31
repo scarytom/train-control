@@ -65,6 +65,10 @@ mounts yet):
     lights in a row at 15 mm pitch); the RIGHT half has the LED battery-meter
     cutout (square 25.5 × 2.2 mm slot + two 3.5 mm end holes, 33 mm apart). All
     clear of the bolt bosses. See next-steps #5.
+12. **Thumb button** — a 6 mm push-button hole (`thumb_button_cut()`) on the
+    lower-front surface at `thumb_pos`, drilled along the local surface normal
+    (`thumb_normal`). It sits ON the Y = 0 split, so it is halved into a matching
+    semicircle in each shell.
 
 ### Key parameters (top of `design3.scad`)
 
@@ -106,6 +110,9 @@ mounts yet):
 - `toggle_row_u`, `toggle_row_v` — horn / reverse / lights positions (lower row).
 - `meter_slot_l`, `meter_slot_w`, `meter_end_holes`, `meter_hole_span`,
   `meter_u`, `meter_v_right` — LED battery-meter slot + end-hole geometry / placement.
+- `thumb_pos`, `thumb_dia`, `thumb_normal`, `thumb_drill` — thumb-button hole
+  centre `[X,Z]`, diameter (6 mm), local surface normal, and drill depth. The
+  hole is centred on Y = 0 so it splits into a semicircle per shell.
 - `part_to_render` — `body`, `body_potmark`, `pot_debug`, `hollow`, `left_shell`,
   `right_shell`, `trigger`, `panel_debug`, `partial_exploded_assembly`,
   `closed_assembly`, `exploded_assembly`.

@@ -848,6 +848,15 @@ if (part_to_render == "body") {
     right_shell();
 } else if (part_to_render == "trigger") {
     trigger_lever();
+} else if (part_to_render == "export_stl") {
+    // Print plate: all three parts in their print orientation (outer face on the
+    // bed), sat on Z=0 and spaced apart along Y. Render/export this one file to
+    // get a ready-to-slice arrangement.
+    //   left_shell : -90 about X   right_shell/trigger : +90 about X
+    // Each is lifted so its lowest point sits at Z=0, and offset in Y.
+    translate([0,   0, 0]) translate([0,0,30]) rotate([-90,0,0]) left_shell();
+    translate([0,  95, 0]) translate([0,0,30]) rotate([ 90,0,0]) right_shell();
+    translate([0, 40, 0]) translate([0,0, 3]) rotate([ 90,0,0]) trigger_lever();
 } else if (part_to_render == "partial_exploded_assembly") {
     color("LightSteelBlue") translate([0,  6, 0]) left_shell();
     color("Crimson")        trigger_lever();

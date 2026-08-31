@@ -54,8 +54,9 @@ mounts yet):
    channel for the trigger armature), seats against a ledge, and has a 3 mm
    wire-exit gap at the pot's higher end. See next-steps #4.
 10. **Trigger + pivot + return spring** — a trigger lever (`trigger_lever()`)
-    pivoting at `pivot_pos`: a finger blade exiting the throat up-and-forward at
-    ~45°, and an actuator arm with an elongated fork slot driving the pot lever.
+    pivoting at `pivot_pos`: a BENT finger blade exiting the throat up-and-forward
+    at ~45°, then curling back to a finger tip near `[0, 30]`, and an actuator arm
+    with an elongated fork slot driving the pot lever.
     The pivot pin and spring anchor share a 3 mm rod (`rod_dia`), each captured
     in blind-bore bosses. A return spring hooks a hole in the armature and a
     rod in a body anchor boss, pulling the trigger to rest. See next-steps #6.
@@ -96,7 +97,10 @@ mounts yet):
 - `rod_dia` — shared metal-rod diameter for BOTH the trigger pivot pin and the
   spring anchor rod (default 3 mm, a common steel dowel / silver-steel size).
 - `trigger_thick`, `trigger_hub_dia` — trigger lever thickness / pivot hub.
-- `trigger_blade_len`, `trigger_blade_ang` — blade reach/angle out of the throat.
+- `trigger_blade_len`, `trigger_blade_ang` — first blade segment reach/angle out
+  of the throat.
+- `trigger_blade_knee`, `trigger_blade_tip2` — the bend: knee (near the pivot,
+  end of the first segment) and the curled finger tip `[X,Z]` (default `[0,30]`).
 - `trigger_arm_aim`, `trigger_arm_extra`, `trigger_arm_w` — actuator arm target,
   extra length, width.
 - `trigger_fork_slot`, `trigger_fork_len`, `trigger_fork_pivot_ext` — elongated
@@ -209,7 +213,8 @@ orthographic view (best for judging profiles).
 
 6. ~~**Trigger + pivot.**~~ **DONE** — `trigger_lever()` pivots at `pivot_pos`
    with: a **finger blade** exiting the concave throat notch right next to the
-   pivot at ~`[-8, 3]` (`trigger_exit`), pointing up-and-forward at ~45°; and an
+   pivot at ~`[-8, 3]` (`trigger_exit`), pointing up-and-forward at ~45°, then
+   BENDING at a knee back to a curled finger tip near `[0, 30]`; and an
    **actuator arm** with an enclosed **elongated fork slot** that straddles the
    pot lever. The **pivot** uses a short rod captured in blind-bore bosses in
    both halves (the trigger hub rotates in the gap between them); the throat has

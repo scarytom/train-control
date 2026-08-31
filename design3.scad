@@ -17,7 +17,7 @@ $fn = 48;
 
 // --- RENDER SELECTION ---
 // Options: "body"
-part_to_render = "exploded_assembly";
+part_to_render = "partial_exploded_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -419,6 +419,12 @@ trigger_blade_ang = 45;               // direction from the exit, deg (+X,+Z)
 trigger_blade_tip = [ trigger_exit[0] + trigger_blade_len*cos(trigger_blade_ang),
                       trigger_exit[1] + trigger_blade_len*sin(trigger_blade_ang) ];
 trigger_blade_w   = 7.0;        // blade width
+// The blade is BENT: it runs straight from the exit to a knee, then curls back
+// toward the finger tip. trigger_blade_knee is partway along the first (45 deg)
+// segment; trigger_blade_tip2 is the final tip (curled up-and-back).
+trigger_blade_knee = [ trigger_exit[0] + 6*cos(trigger_blade_ang),
+                       trigger_exit[1] + 6*sin(trigger_blade_ang) ];
+trigger_blade_tip2 = [ 0, 30 ];   // curled finger tip [X, Z]
 // Actuator arm: a STRAIGHT run from the pivot to the pot lever engagement point
 // (roughly opposite the blade). Longer + fatter, with a FORK slot cut right
 // through the tip so it straddles the pot lever and drives it both ways.
@@ -460,9 +466,15 @@ module trigger_profile_2d() {
                 translate(pivot_pos) circle(d = trigger_blade_w);
                 translate(trigger_exit) circle(d = trigger_blade_w);
             }
+            // bent blade: exit -> knee (straight up-forward) ...
             hull() {
-                translate(trigger_exit) circle(d = trigger_blade_w);
-                translate(trigger_blade_tip) circle(d = trigger_blade_w);
+                translate(trigger_exit)      circle(d = trigger_blade_w);
+                translate(trigger_blade_knee) circle(d = trigger_blade_w);
+            }
+            // ... then knee -> curled tip (bends back toward the finger)
+            hull() {
+                translate(trigger_blade_knee) circle(d = trigger_blade_w);
+                translate(trigger_blade_tip2) circle(d = trigger_blade_w);
             }
             // actuator arm: hub -> pot engagement pad
             hull() {

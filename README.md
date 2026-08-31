@@ -157,11 +157,17 @@ orthographic view (best for judging profiles).
    - Add wiring clearance / channels down to the electronics bay.
 
 6. **Trigger + pivot.** *(Not yet in `design3.scad` — only the pivot LOCATION
-   is recorded as data: `pivot_pos = [-12.81, 1.92]`, `pivot_dia = 4.0`.)*
+   and exit are recorded as data: `pivot_pos = [-12.81, 1.92]`, `pivot_dia = 4.0`,
+   `trigger_exit = [-8, 3]`.)*
    - Design a trigger lever (a legacy `trigger_lever()` exists in `design.scad`
      v1 as a starting point) to fit the new throat.
+   - **The trigger blade exits the body through the concave THROAT notch right
+     next to the pivot, at approx `[-8, 3]`** (agreed during planning) — NOT
+     lower/forward in the grip.
    - Drill the pivot hole through both shells at `pivot_pos`.
-   - Add an actuator arm reaching the pot on `pot_axis_*`.
+   - Add an actuator arm reaching from the pivot up to the pot lever along
+     `pot_axis_*`; the pot's `pot_inset`/`pot_shift` leave a clear channel at the
+     split for the arm to sweep.
 
 7. **Cable exit** at the base of the grip (rear/bottom of the butt).
 

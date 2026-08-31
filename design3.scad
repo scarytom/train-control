@@ -228,6 +228,16 @@ pivot_pos = [-12.81, 1.92];   // [X, Z] centre of the trigger pivot
 pivot_dia = 4.0;              // intended pivot pin diameter (mm) — bigger than
                               // the ~1.9mm marker in the source STL
 
+// TRIGGER GEOMETRY NOTES (agreed while planning the trigger):
+//  - The trigger pivots at pivot_pos above.
+//  - The trigger BLADE (finger part) exits the body through the concave THROAT
+//    notch RIGHT NEXT TO the pivot, at approx [X,Z] = [-8, 3] (the point on the
+//    outline nearest the pivot). It does NOT exit lower/forward in the grip.
+//  - The trigger ACTUATOR ARM reaches from the pivot up to the pot lever along
+//    the pot axis (pot_axis_rear/front); the pot is inset+shifted so the arm can
+//    sweep in the clear channel at the split plane (see pot_inset / pot_shift).
+trigger_exit = [-8, 3];       // [X, Z] where the trigger blade exits the throat
+
 // Visualises the recorded pot axis (for debugging / placing the mount later).
 module pot_location_marker() {
     // rod along the slot centerline

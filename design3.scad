@@ -1,17 +1,12 @@
 // ============================================================
-// TRAIN CONTROLLER v3 - self-contained (no external DXF)
-// Identical geometry to design2.scad, but the ergonomic outline is
-// embedded directly as a polygon() instead of import()ing a DXF.
-// The outline was extracted/simplified from the original Left.stl.
+// TRAIN CONTROLLER - self-contained parametric hand controller.
+// The ergonomic outline is embedded as a polygon() (simplified from Left.stl).
+//
+// COORDINATE CONVENTION:
+//   X = controller length (head/nose at -X, grip/butt at +X)
+//   Z = up/down (silhouette height)
+//   Y = thickness (the two shell halves separate along Y=0)
 // ============================================================
-//
-// COORDINATE CONVENTION (adopted from the source STL outline):
-//   X = along the controller length. Head/finger-slot at -X, grip/butt at +X.
-//   Z = up/down (the silhouette height).
-//   Y = thickness (the two shell halves separate along Y).
-//
-// The outline is defined in a plane X(length) x Y(height), thin in Z.
-// We rotate it [90,0,0] so its height becomes our Z.
 
 $fn = 48;
 
@@ -27,10 +22,8 @@ taper_head_x = -20.0;  // X at/below which full head_thick is used (head side, -
 taper_grip_x =   5.0;  // X at/above which grip_thick is used (grip side, +X)
 
 // --- BUTTON CLEARANCE : room above the pot for buttons + wiring ---
-// Pushes the angled ~50 deg "top" button face (outline edge 30->31) OUTWARD
-// along its own normal by this amount, keeping the face's angle. This opens up
-// space between the internal pot and the button-mounting surface.
-// (See button_face_normal / button_move_idx below.) Play with this to taste.
+// Pushes the angled ~50deg button face (outline edge 30->31) OUTWARD along its
+// normal by this amount (see button_face_normal / button_move_idx below).
 button_clearance = 20.0;   // mm the button face is pushed out along its normal
 
 // ------------------------------------------------------------
@@ -58,10 +51,8 @@ outline_points = [
   [-12.81, 1.12]
 ];
 
-// path[0] = outer body only. The small pivot hole (points 44-48) is NOT
-// referenced here: we keep the body solid and drill the pivot as a proper
-// hole later when the trigger is designed (see pivot_pos below). Leaving it in
-// the outline made minkowski() distort it into a slot.
+// path[0] = outer body only. Points 34-48 (former finger slot + pivot marker)
+// are intentionally not referenced; the pivot is bored later (see pivot_pos).
 outline_paths = [
   [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
    20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33]
@@ -71,17 +62,10 @@ module outline_2d() {
     polygon(points = outline_points, paths = outline_paths);
 }
 
-// Outline with the HEAD's "top" (the ~50-deg blue button face) pushed OUTWARD
-// along its own normal by button_clearance, adding room between the internal
-// pot and the button-mounting surface while keeping the surface's angle.
-//
-// We move the blue face together with the ROUNDED CORNER FILLETS at each end
-// so the curves travel with the surface (no ugly welded-block kinks). The
-// fillet clusters are: rear corner {28,29,30} and front corner {31,32,33,0}.
-// Including both seam points (33 and 0) at the front keeps that fillet intact
-// and lets the long bottom edge (0->1) gently re-angle instead of the tiny
-// fillet edge stretching into a gash. All other points stay put, so the two
-// adjacent long edges (top-rear 27->28 and bottom 0->1) smoothly follow.
+// Outline with the blue button face pushed OUTWARD along its normal by
+// button_clearance. The face is moved together with its corner-fillet points
+// (rear {28,29,30}, front {31,32,33,0}) so the curves travel with it and the
+// adjacent long edges re-angle smoothly instead of kinking.
 button_face_normal = [-0.772, -0.636];  // outward normal of edge 30->31 (~ -140.5 deg)
 button_move_idx    = [28, 29, 30, 31, 32, 33, 0];  // blue face + both corner fillets
 
@@ -127,7 +111,6 @@ pot_fit    = 0.4;    // clearance around the body in the pocket (mm)
 pot_inset  = 5.0;    // how far the pot TOP sits below the split (into +Y), so
                      // the trigger armature can travel past it near Y=0. The
                      // 10 mm lever still reaches across the split.
-pot_lever_side = 1;  // +1: lever/pocket offset toward +Y half; -1 toward -Y
 pot_wall   = 1.6;    // cradle wall thickness around the pocket (mm)
 pot_pin_gap = 3.0;   // clearance below the body for solder pins (mm, -Y of body)
 pot_lever_slot_w = 6.0;  // width of the lever clearance slot across the split
@@ -169,7 +152,6 @@ module pot_cradle_solid() {
         translate([0, (y0 + y1)/2, 0])
             cube([pot_len + 2*pot_wall, y1 - y0, pot_wid + 2*pot_wall], center = true);
 }
-// (the caller intersects this with body_solid() and keep_left())
 
 // Pocket the pot body drops into (fit clearance), OPEN at the split face and
 // stopping at the LEDGE (Y = pot_inset + pot_hgt + fit). Beyond the ledge stays
@@ -219,12 +201,11 @@ module pot_mount_add() {
 module pot_mount_cut() { pot_pocket(); pot_lever_slot(); pot_pin_clearance(); pot_wire_gap(); }
 
 // ------------------------------------------------------------
-// TRIGGER PIVOT LOCATION (was a small hole in the original outline)
+// TRIGGER PIVOT LOCATION
 // ------------------------------------------------------------
-// The original STL had a small hole here for the trigger-lever pivot pin.
-// We keep the body solid for now and record the location as data; the pivot
-// will be drilled as a proper hole through both shells when the trigger is
-// designed. Centre is in the outline X-Z plane, on Y=0 (through the thickness).
+// Centre of the trigger-lever pivot, in the outline X-Z plane on Y=0
+// (from the small marker hole in the source STL). The pivot is captured in
+// blind-bore bosses in both shells (see pivot_boss / pivot_bore).
 pivot_pos = [-12.81, 1.92];   // [X, Z] centre of the trigger pivot
 // A single metal ROD diameter is used for BOTH the trigger pivot pin and the
 // spring anchor rod (cut from the same stock). 3mm is a common, easily-sourced
@@ -232,14 +213,9 @@ pivot_pos = [-12.81, 1.92];   // [X, Z] centre of the trigger pivot
 rod_dia   = 3.0;              // shared pivot-pin / spring-anchor rod diameter (mm)
 pivot_dia = rod_dia;          // pivot pin uses the shared rod
 
-// TRIGGER GEOMETRY NOTES (agreed while planning the trigger):
-//  - The trigger pivots at pivot_pos above.
-//  - The trigger BLADE (finger part) exits the body through the concave THROAT
-//    notch RIGHT NEXT TO the pivot, at approx [X,Z] = [-8, 3] (the point on the
-//    outline nearest the pivot). It does NOT exit lower/forward in the grip.
-//  - The trigger ACTUATOR ARM reaches from the pivot up to the pot lever along
-//    the pot axis (pot_axis_rear/front); the pot is inset+shifted so the arm can
-//    sweep in the clear channel at the split plane (see pot_inset / pot_shift).
+// The trigger BLADE exits the body through the concave THROAT notch next to the
+// pivot at ~trigger_exit; the ACTUATOR ARM reaches from the pivot to the pot
+// lever, sweeping in the clear channel at the split (see pot_inset / pot_shift).
 trigger_exit = [-8, 3];       // [X, Z] where the trigger blade exits the throat
 // ------------------------------------------------------------
 // BUTTON / SWITCH PANEL on the raised blue face (edge 30->31, raised)
@@ -328,11 +304,9 @@ module panel_cuts_right() {
     meter_cutout(meter_u, meter_v_right);
 }
 
-// --- THUMB BUTTON (spine, on the split) ---
-// A 12mm push button in the MIDDLE of the controller (on the Y=0 split), so the
-// hole is halved into a semicircle in each shell. Drilled normal to the local
-// surface at thumb_pos (measured local normal ~ (-0.16, 0, -0.99), i.e. mostly
-// -Z with a slight -X tilt).
+// --- THUMB BUTTON (on the split) ---
+// A 6mm push button on the Y=0 split (halved into a semicircle in each shell),
+// drilled along the measured local surface normal at thumb_pos.
 thumb_pos      = [ 9, -32 ];        // [X, Z] centre on the surface
 thumb_dia      = 6.2;              // 6mm button + clearance (matches the toggles)
 thumb_normal   = [ -0.16, 0, -0.99 ];  // measured outward surface normal
@@ -809,7 +783,7 @@ module right_shell() {
         }
         screw_holes();
         nut_recesses();
-        pot_lever_slot();   // clearance for the pot lever that crosses the split
+        pot_lever_slot();
         pivot_bore(-1);
         spring_bore(-1);
         trigger_throat_cut();
@@ -826,16 +800,7 @@ if (part_to_render == "left_shell") {
     right_shell();
 } else if (part_to_render == "trigger") {
     trigger_lever();
-} else if (part_to_render == "export_stl") {
-    // Print plate: all three parts in their print orientation (outer face on the
-    // bed), sat on Z=0 and spaced apart along Y. Render/export this one file to
-    // get a ready-to-slice arrangement.
-    //   left_shell : -90 about X   right_shell/trigger : +90 about X
-    // Each is lifted so its lowest point sits at Z=0, and offset in Y.
-    translate([0,   0, 0]) translate([0,0,30]) rotate([-90,0,0]) left_shell();
-    translate([0,  95, 0]) translate([0,0,30]) rotate([ 90,0,0]) right_shell();
-    translate([0, 40, 0]) translate([0,0, 3]) rotate([ 90,0,0]) trigger_lever();
-} else if (part_to_render == "partial_exploded_assembly") {
+}else if (part_to_render == "partial_exploded_assembly") {
     color("LightSteelBlue") translate([0,  6, 0]) left_shell();
     color("Crimson")        trigger_lever();
 } else if (part_to_render == "exploded_assembly") {
@@ -846,4 +811,8 @@ if (part_to_render == "left_shell") {
     color("LightSteelBlue") left_shell();
     color("SlateGray")      right_shell();
     color("Crimson")        trigger_lever();
+} else if (part_to_render == "export_stl") {
+    translate([0,   0, 0]) translate([0,0,30]) rotate([-90,0,0]) left_shell();
+    translate([0,  95, 0]) translate([0,0,30]) rotate([ 90,0,0]) right_shell();
+    translate([0, 40, 0]) translate([0,0, 3]) rotate([ 90,0,0]) trigger_lever();
 }

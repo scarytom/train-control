@@ -221,8 +221,101 @@ module body_hollow() {
 module keep_left()  { translate([-300, 0, -300]) cube([600, 300, 600]); }   // Y >= 0
 module keep_right() { translate([-300, -300, -300]) cube([600, 300, 600]); } // Y <= 0
 
-module left_shell()  { intersection() { body_hollow(); keep_left();  } }
-module right_shell() { intersection() { body_hollow(); keep_right(); } }
+// ------------------------------------------------------------
+// MATE FEATURES: screw bosses (M3 self-tap) with integral alignment spigots
+// ------------------------------------------------------------
+// All features are centred on the split plane (Y = 0) and run along Y; each
+// shell keeps its own half after the keep_left/keep_right clip.
+//
+// Each screw boss is a solid column spanning the cavity wall-to-wall (so it is
+// always anchored — no floating parts). Alignment is integral to the bosses:
+// the RIGHT half boss carries a male SPIGOT that crosses the split plane into a
+// female COUNTERBORE in the LEFT half boss, so the halves self-register.
+// Fastening: LEFT boss = M3 clearance hole (+ head counterbore on the outer
+// face); RIGHT boss = smaller pilot hole the screw self-taps into.
+
+screw_clear_dia  = 3.4;   // clearance hole (left half)
+screw_pilot_dia  = 2.5;   // self-tap pilot (right half)
+screw_boss_dia   = 8.0;   // boss outer diameter
+screw_head_dia   = 6.2;   // head counterbore diameter (left, outer face)
+screw_head_depth = 2.5;
+
+spigot_dia       = 4.5;   // male alignment spigot (on right boss)
+spigot_len       = 3.0;   // how far it crosses the split into the left half
+spigot_clear     = 0.2;   // fit clearance for the counterbore
+
+// [X, Z] screw/boss locations (in the outline plane). Placed at corners /
+// perimeter, kept CLEAR of the trigger<->pot armature path through the head
+// centre. Verified inside the body with margin.
+screw_boss_pos = [ [11, -28], [68, -1], [55, 17], [-31, 18], [-80, -3], [-45, -45] ];
+
+// One screw-boss column (solid), centred on Y=0, spanning the full thickness.
+module boss_column(p) {
+    translate([p[0], 0, p[1]]) rotate([90, 0, 0])
+        cylinder(h = head_thick + 4, d = screw_boss_dia, center = true);
+}
+module all_boss_columns() { for (p = screw_boss_pos) boss_column(p); }
+
+// Screw holes along Y through each boss (dia set by caller).
+module screw_holes(dia) {
+    for (p = screw_boss_pos)
+        translate([p[0], 0, p[1]]) rotate([90, 0, 0])
+            cylinder(h = head_thick + 20, d = dia, center = true);
+}
+// Head counterbore on the outer (left, +Y) face.
+module screw_heads() {
+    for (p = screw_boss_pos)
+        translate([p[0], 0, p[1]]) rotate([-90, 0, 0])
+            translate([0, 0, head_thick/2 + 10 - screw_head_depth])
+                cylinder(h = 20, d = screw_head_dia, center = false);
+}
+// Male alignment spigots: on the RIGHT boss, crossing the split into +Y.
+module spigots() {
+    for (p = screw_boss_pos)
+        translate([p[0], -0.01, p[1]]) rotate([-90, 0, 0])
+            cylinder(h = spigot_len, d = spigot_dia, center = false);
+}
+// Female counterbores in the LEFT boss to receive the spigots.
+module spigot_bores() {
+    for (p = screw_boss_pos)
+        translate([p[0], -0.01, p[1]]) rotate([-90, 0, 0])
+            cylinder(h = spigot_len + 0.5, d = spigot_dia + 2*spigot_clear, center = false);
+}
+
+// LEFT half (Y >= 0): shell + bosses, minus screw clearance, head bores and
+// the spigot counterbores that receive the right half's spigots.
+module left_shell() {
+    difference() {
+        intersection() {
+            union() {
+                body_hollow();
+                intersection() { all_boss_columns(); body_solid(); }
+            }
+            keep_left();
+        }
+        screw_holes(screw_clear_dia);
+        screw_heads();
+        spigot_bores();
+    }
+}
+
+// RIGHT half (Y <= 0): shell + bosses + alignment spigots (spigots project into
+// +Y, so unioned after the clip), minus the pilot holes.
+module right_shell() {
+    difference() {
+        union() {
+            intersection() {
+                union() {
+                    body_hollow();
+                    intersection() { all_boss_columns(); body_solid(); }
+                }
+                keep_right();
+            }
+            spigots();   // project across the split; anchored to the boss face
+        }
+        screw_holes(screw_pilot_dia);
+    }
+}
 
 // --- EXECUTION ---
 if (part_to_render == "body") {

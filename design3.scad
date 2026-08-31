@@ -231,14 +231,23 @@ module keep_right() { translate([-300, -300, -300]) cube([600, 300, 600]); } // 
 // always anchored — no floating parts). Alignment is integral to the bosses:
 // the RIGHT half boss carries a male SPIGOT that crosses the split plane into a
 // female COUNTERBORE in the LEFT half boss, so the halves self-register.
-// Fastening: LEFT boss = M3 clearance hole (+ head counterbore on the outer
-// face); RIGHT boss = smaller pilot hole the screw self-taps into.
+// Fastening: an M3 bolt passes through a clearance hole in BOTH bosses; the
+// LEFT (outer) face has a round bolt-head recess, the RIGHT (outer) face has a
+// hexagonal recess that captures the nut.
 
-screw_clear_dia  = 3.4;   // clearance hole (left half)
-screw_pilot_dia  = 2.5;   // self-tap pilot (right half)
+// Fastening: an M3 bolt passes ALL THE WAY THROUGH a clearance hole in both
+// halves. The LEFT (outer) face has a round recess for the bolt head; the
+// RIGHT (outer) face has a HEXAGONAL recess that captures the nut so the bolt
+// can be tightened from the head side alone.
+screw_clear_dia  = 3.4;   // M3 clearance hole (through both halves)
 screw_boss_dia   = 8.0;   // boss outer diameter
-screw_head_dia   = 6.2;   // head counterbore diameter (left, outer face)
-screw_head_depth = 2.5;
+
+screw_head_dia   = 6.2;   // round recess diameter for the bolt head (left face)
+screw_head_depth = 2.5;   // depth of the head recess
+
+nut_af           = 5.5;   // M3 nut width across flats (A/F)
+nut_across_corners = nut_af / cos(30);   // = ~6.35 mm, used for the hex recess
+nut_depth        = 2.6;   // nut thickness + a little (capture depth, right face)
 
 spigot_dia       = 4.5;   // male alignment spigot (on right boss)
 spigot_len       = 3.0;   // how far it crosses the split into the left half
@@ -256,19 +265,47 @@ module boss_column(p) {
 }
 module all_boss_columns() { for (p = screw_boss_pos) boss_column(p); }
 
-// Screw holes along Y through each boss (dia set by caller).
-module screw_holes(dia) {
+// Screw clearance hole all the way through, along Y, down each boss centre.
+module screw_holes(dia = screw_clear_dia) {
     for (p = screw_boss_pos)
         translate([p[0], 0, p[1]]) rotate([90, 0, 0])
-            cylinder(h = head_thick + 20, d = dia, center = true);
+            cylinder(h = head_thick + 40, d = dia, center = true);
 }
-// Head counterbore on the outer (left, +Y) face.
-module screw_heads() {
-    for (p = screw_boss_pos)
-        translate([p[0], 0, p[1]]) rotate([-90, 0, 0])
-            translate([0, 0, head_thick/2 + 10 - screw_head_depth])
-                cylinder(h = 20, d = screw_head_dia, center = false);
+
+// A recess of the given 2D-ish tool (round or hex) cut into ONE outer face to a
+// uniform 'depth' measured from the LOCAL surface. Implemented as:
+//   (long tool column on that side)  -  (body shrunk inward by depth)
+// so the tool only removes the outermost 'depth' of material, following the
+// varying body thickness. 'side' = +1 for the LEFT (+Y) face, -1 for RIGHT.
+module face_recess(dia, depth, fn, side) {
+    intersection() {
+        // long tool columns down each boss axis, only on the chosen side
+        for (p = screw_boss_pos)
+            translate([p[0], side > 0 ? 0 : -(head_thick+40), p[1]])
+                rotate([-90, 0, 0])
+                    cylinder(h = head_thick + 40, d = dia, $fn = fn);
+        // remove everything deeper than 'depth' from the surface
+        difference() {
+            translate([-300,-300,-300]) cube([600,600,600]);   // all space
+            body_core_or_solid_inset(depth);                    // body shrunk by depth
+        }
+    }
 }
+
+// Body (with rounding if enabled) shrunk inward by 'd' on all faces — used to
+// bound recess depth to the local surface.
+module body_core_or_solid_inset(d) {
+    if (grip_round > 0)
+        minkowski() { body_core(grip_round + d); sphere(r = grip_round, $fn = 24); }
+    else
+        body_core(d);
+}
+
+// Round bolt-head recess on the LEFT (+Y) outer face.
+module head_recesses() { face_recess(screw_head_dia, screw_head_depth, 48, +1); }
+// Hexagonal nut recess on the RIGHT (-Y) outer face (captures the nut).
+module nut_recesses()  { face_recess(nut_across_corners, nut_depth, 6, -1); }
+
 // Male alignment spigots: on the RIGHT boss, crossing the split into +Y.
 module spigots() {
     for (p = screw_boss_pos)
@@ -282,8 +319,8 @@ module spigot_bores() {
             cylinder(h = spigot_len + 0.5, d = spigot_dia + 2*spigot_clear, center = false);
 }
 
-// LEFT half (Y >= 0): shell + bosses, minus screw clearance, head bores and
-// the spigot counterbores that receive the right half's spigots.
+// LEFT half (Y >= 0): shell + bosses, minus through clearance hole, the round
+// bolt-head recess (outer +Y face) and the spigot counterbores.
 module left_shell() {
     difference() {
         intersection() {
@@ -293,14 +330,14 @@ module left_shell() {
             }
             keep_left();
         }
-        screw_holes(screw_clear_dia);
-        screw_heads();
+        screw_holes();
+        head_recesses();
         spigot_bores();
     }
 }
 
-// RIGHT half (Y <= 0): shell + bosses + alignment spigots (spigots project into
-// +Y, so unioned after the clip), minus the pilot holes.
+// RIGHT half (Y <= 0): shell + bosses + alignment spigots, minus through
+// clearance hole and the hexagonal nut recess (outer -Y face).
 module right_shell() {
     difference() {
         union() {
@@ -311,9 +348,10 @@ module right_shell() {
                 }
                 keep_right();
             }
-            spigots();   // project across the split; anchored to the boss face
+            spigots();
         }
-        screw_holes(screw_pilot_dia);
+        screw_holes();
+        nut_recesses();
     }
 }
 

@@ -123,9 +123,8 @@ mounts yet):
 - `cable_pos`, `cable_dia`, `cable_normal`, `cable_drill` — cable-exit hole
   centre `[X,Z]`, diameter (7 mm), local surface normal, and drill depth. Also
   centred on Y = 0 (semicircle per shell). Uses the shared `normal_hole()` helper.
-- `part_to_render` — `body`, `body_potmark`, `pot_debug`, `hollow`, `left_shell`,
-  `right_shell`, `trigger`, `panel_debug`, `partial_exploded_assembly`,
-  `closed_assembly`, `exploded_assembly`.
+- `part_to_render` — `left_shell`, `right_shell`, `trigger`, `export_stl`,
+  `partial_exploded_assembly`, `closed_assembly`, `exploded_assembly`.
 
 ### Recorded trigger pivot location (data only — no trigger yet)
 
@@ -147,8 +146,6 @@ It is preserved as data so the pot mount can be placed on the same axis:
 - `pot_axis_angle = -51.1`          — angle from +X in the X-Z plane (deg)
 - `pot_axis_mid   ≈ [-46.5, -11.6]`
 
-`part_to_render = "body_potmark"` overlays a marker showing this axis.
-
 ## How to render
 
 From the project root (paths in the file are relative):
@@ -160,9 +157,8 @@ openscad -o renders/iso.png --camera=200,-260,150,-5,0,5 --viewall design3.scad
 # clean orthographic side view (the ergonomic silhouette)
 openscad -o renders/side.png --camera=0,300,0,0,0,0 --viewall --projection=o design3.scad
 
-# show the recorded pot axis
-openscad -o renders/potmark.png -D 'part_to_render="body_potmark"' \
-  --camera=200,-260,150,-5,0,5 --viewall design3.scad
+# export the print-ready plate (all three parts, print orientation)
+openscad -o stl/export_plate.stl --render -D 'part_to_render="export_stl"' design3.scad
 ```
 
 Tip: `--viewall` frames the model automatically; `--projection=o` gives a true
@@ -208,8 +204,7 @@ orthographic view (best for judging profiles).
    switch on its own upper row** and **horn / reverse / lights in a lower row**
    (15 mm pitch). The RIGHT half (`-Y`) carries the **LED battery-meter cutout**:
    a square `25.5 × 2.2 mm` slot with a `3.5 mm` hole at each end, `33 mm` apart.
-   All holes stay clear of the two bolt bosses that pass under the face. Preview
-   the panel flat-on with `part_to_render = "panel_debug"` (top ortho view).
+   All holes stay clear of the two bolt bosses that pass under the face.
 
 6. ~~**Trigger + pivot.**~~ **DONE** — `trigger_lever()` pivots at `pivot_pos`
    with: a **finger blade** exiting the concave throat notch right next to the
@@ -231,9 +226,17 @@ orthographic view (best for judging profiles).
    into a semicircle per shell (shares the `normal_hole()` helper with the thumb
    button).
 
-8. **Validate & export.**
-   - `validate_scad` / build with no CGAL errors.
-   - Export `left_shell` and `right_shell` to STL for printing.
+8. ~~**Validate & export.**~~ **DONE** — full CGAL renders (`grip_round = 3`,
+   minkowski rounding) with no errors; each part is manifold (`Simple: yes`).
+   `part_to_render = "export_stl"` renders a **single print-ready plate** with
+   all three parts (both shells + trigger) pre-rotated to their print
+   orientation (split face on the bed: left shell −90°, right shell / trigger
+   +90° about X), sat on `Z = 0` and spaced apart along Y. Export it in one go:
+
+   `openscad -o stl/export_plate.stl --render -D 'part_to_render="export_stl"' design3.scad`
+
+   The individual `left_shell` / `right_shell` / `trigger` part modes are still
+   available for exporting a single part (in the model's native orientation).
 
 ## Known cleanups / notes
 

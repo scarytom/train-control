@@ -16,8 +16,9 @@
 $fn = 48;
 
 // --- RENDER SELECTION ---
-// Options: "body"
-part_to_render = "partial_exploded_assembly";
+// Options: "left_shell", "right_shell", "trigger", "export_stl",
+//          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
+part_to_render = "closed_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -240,16 +241,6 @@ pivot_dia = rod_dia;          // pivot pin uses the shared rod
 //    the pot axis (pot_axis_rear/front); the pot is inset+shifted so the arm can
 //    sweep in the clear channel at the split plane (see pot_inset / pot_shift).
 trigger_exit = [-8, 3];       // [X, Z] where the trigger blade exits the throat
-
-// Visualises the recorded pot axis (for debugging / placing the mount later).
-module pot_location_marker() {
-    // rod along the slot centerline
-    hull() {
-        translate([pot_axis_rear[0],  0, pot_axis_rear[1]])  sphere(2);
-        translate([pot_axis_front[0], 0, pot_axis_front[1]]) sphere(2);
-    }
-}
-
 // ------------------------------------------------------------
 // BUTTON / SWITCH PANEL on the raised blue face (edge 30->31, raised)
 // ------------------------------------------------------------
@@ -271,9 +262,6 @@ function _unit(v) = v / norm(v);
 bf_uedge = _unit(((bf_TR - bf_TL) + (bf_BR - bf_BL)) / 2);  // +u toward Zlo/+X
 bf_uy    = _unit(((bf_TL - bf_BL) + (bf_TR - bf_BR)) / 2);  // +v toward +Y
 bf_n     = _unit(cross(bf_uedge, bf_uy));                   // outward normal
-// keep for the debug view
-button_face_mid = [ bf_center[0], bf_center[2] ];
-dbg_rot = 90 - atan2(bf_uedge[2], bf_uedge[0]);  // panel_debug Y-rotation (overridable)
 
 module panel_face_place(u, v) {
     // columns: local X = uedge, local Y = uy, local Z = outward normal, + origin
@@ -832,17 +820,7 @@ module right_shell() {
 }
 
 // --- EXECUTION ---
-if (part_to_render == "body") {
-    body_solid();
-} else if (part_to_render == "body_potmark") {
-    body_solid();
-    color("Crimson") pot_location_marker();
-} else if (part_to_render == "pot_debug") {
-    color("LightSteelBlue", 0.5) body_solid();
-    color("Red") pot_body_envelope();
-} else if (part_to_render == "hollow") {
-    body_hollow();
-} else if (part_to_render == "left_shell") {
+if (part_to_render == "left_shell") {
     left_shell();
 } else if (part_to_render == "right_shell") {
     right_shell();
@@ -868,12 +846,4 @@ if (part_to_render == "body") {
     color("LightSteelBlue") left_shell();
     color("SlateGray")      right_shell();
     color("Crimson")        trigger_lever();
-} else if (part_to_render == "panel_debug") {
-    // Rotate the whole assembly so the blue face normal points to +Z, so a
-    // plain top view (--camera=0,0,300,0,0,0 --projection=o) shows the panel
-    // flat-on with the toggle holes (+Y) and meter slot (-Y).
-    rotate([0, dbg_rot, 0]) {
-        color("LightSteelBlue") left_shell();
-        color("SlateGray")      right_shell();
-    }
 }

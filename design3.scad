@@ -225,8 +225,11 @@ module pot_mount_cut() { pot_pocket(); pot_lever_slot(); pot_pin_clearance(); po
 // will be drilled as a proper hole through both shells when the trigger is
 // designed. Centre is in the outline X-Z plane, on Y=0 (through the thickness).
 pivot_pos = [-12.81, 1.92];   // [X, Z] centre of the trigger pivot
-pivot_dia = 4.0;              // intended pivot pin diameter (mm) — bigger than
-                              // the ~1.9mm marker in the source STL
+// A single metal ROD diameter is used for BOTH the trigger pivot pin and the
+// spring anchor rod (cut from the same stock). 3mm is a common, easily-sourced
+// steel dowel / silver-steel size.
+rod_dia   = 3.0;              // shared pivot-pin / spring-anchor rod diameter (mm)
+pivot_dia = rod_dia;          // pivot pin uses the shared rod
 
 // TRIGGER GEOMETRY NOTES (agreed while planning the trigger):
 //  - The trigger pivots at pivot_pos above.
@@ -282,6 +285,17 @@ trigger_fork_len  = 6.0;        // elongated slot length along the arm (kept
                                 // inside the tip pad so it's an enclosed hole)
 trigger_fork_pivot_ext = 7.0;   // extend the slot this far toward the pivot end
 
+// --- RETURN SPRING ---
+// A small extension spring pulls the armature toward lower Z (rest position).
+// One end hooks a 2mm hole in the armature; the other end attaches to a rod
+// captured in a blind-bore boss in the body (like the pivot rod).
+spring_trigger_pos = [-17, -5]; // [X,Z] spring hole in the armature
+spring_hole_dia    = 2.0;       // spring hook hole diameter
+spring_anchor_pos  = [0, -25];  // [X,Z] body anchor point (spring pulls to here)
+spring_rod_dia     = rod_dia;   // anchor rod uses the shared rod (same stock)
+spring_boss_dia    = 6.0;       // anchor boss diameter
+spring_bore_depth  = 8.0;       // blind bore depth into each anchor boss
+
 // 2D trigger profile in the X-Z plane (before extrude).
 module trigger_profile_2d() {
     difference() {
@@ -305,6 +319,8 @@ module trigger_profile_2d() {
         }
         // pivot bore
         translate(pivot_pos) circle(d = trigger_bore);
+        // spring anchor hole (for the return spring hook)
+        translate(spring_trigger_pos) circle(d = spring_hole_dia);
     }
 }
 
@@ -363,22 +379,46 @@ module pivot_bore(side) {
             cylinder(h = pivot_bore_depth, d = pivot_bore_dia);
 }
 
+// Spring ANCHOR boss + blind bore: captures a short rod between the halves at
+// spring_anchor_pos, that the return spring's far end attaches to. Same scheme
+// as the pivot. The rod is exposed near the split (Y ~ 0) for the spring hook.
+module spring_boss(side) {
+    intersection() {
+        translate([spring_anchor_pos[0], side*pivot_hub_gap, spring_anchor_pos[1]])
+            rotate([side>0 ? -90 : 90, 0, 0])
+                cylinder(h = head_thick, d = spring_boss_dia);
+        body_solid();
+    }
+}
+module spring_bore(side) {
+    translate([spring_anchor_pos[0], side*pivot_hub_gap, spring_anchor_pos[1]])
+        rotate([side>0 ? -90 : 90, 0, 0])
+            cylinder(h = spring_bore_depth, d = spring_rod_dia + 0.3);
+}
+
 // Throat cutout: a slot in the body at the throat so the blade can pass through
-// the wall and swing. Spans from the pivot out just past the exit point (a bit
-// beyond, for swing clearance) — NOT out to the far finger tip. Slightly wider
-// than the blade, spanning the trigger thickness + clearance.
+// the wall and swing. Spans from the pivot out past the exit point (for swing
+// clearance) with extra opening toward LOWER Z for the blade's downward sweep.
+// Slightly wider than the blade, spanning the trigger thickness + clearance.
+trigger_throat_ext    = 6.0;    // extension past the exit along the blade dir
+trigger_throat_lowext = 8.0;    // extra opening toward lower Z (blade swing)
 module trigger_throat_cut() {
     slot_w = trigger_blade_w + 3;      // clearance around the blade
     slot_t = trigger_thick + 2;        // Y clearance
-    // a short extension past the exit along the blade direction, for swing room
-    ext = [ trigger_exit[0] + 6*cos(trigger_blade_ang),
-            trigger_exit[1] + 6*sin(trigger_blade_ang) ];
+    // extension past the exit along the blade direction, for swing room
+    ext = [ trigger_exit[0] + trigger_throat_ext*cos(trigger_blade_ang),
+            trigger_exit[1] + trigger_throat_ext*sin(trigger_blade_ang) ];
+    // a point extended toward LOWER Z (and slightly +X) to open the low-Z end
+    lowext = [ trigger_exit[0] + trigger_throat_lowext*cos(trigger_blade_ang - 90),
+               trigger_exit[1] + trigger_throat_lowext*sin(trigger_blade_ang - 90) ];
     hull() {
         translate([pivot_pos[0], 0, pivot_pos[1]])
             rotate([90,0,0]) cylinder(h=slot_t, d=slot_w, center=true);
         translate([trigger_exit[0], 0, trigger_exit[1]])
             rotate([90,0,0]) cylinder(h=slot_t, d=slot_w, center=true);
         translate([ext[0], 0, ext[1]])
+            rotate([90,0,0]) cylinder(h=slot_t, d=slot_w, center=true);
+        translate([lowext[0], 0, lowext[1]])
             rotate([90,0,0]) cylinder(h=slot_t, d=slot_w, center=true);
     }
 }
@@ -581,6 +621,7 @@ module left_shell() {
                 intersection() { all_boss_columns(); body_solid(); }
                 pot_mount_add();
                 pivot_boss(1);
+                spring_boss(1);
             }
             keep_left();
         }
@@ -589,6 +630,7 @@ module left_shell() {
         spigot_bores();
         pot_mount_cut();
         pivot_bore(1);
+        spring_bore(1);
         trigger_throat_cut();
     }
 }
@@ -603,6 +645,7 @@ module right_shell() {
                     body_hollow();
                     intersection() { all_boss_columns(); body_solid(); }
                     pivot_boss(-1);
+                    spring_boss(-1);
                 }
                 keep_right();
             }
@@ -612,6 +655,7 @@ module right_shell() {
         nut_recesses();
         pot_lever_slot();   // clearance for the pot lever that crosses the split
         pivot_bore(-1);
+        spring_bore(-1);
         trigger_throat_cut();
     }
 }

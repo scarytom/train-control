@@ -53,6 +53,12 @@ mounts yet):
    into the left half so only its 10 mm lever crosses the split (leaving a
    channel for the trigger armature), seats against a ledge, and has a 3 mm
    wire-exit gap at the pot's higher end. See next-steps #4.
+10. **Trigger + pivot + return spring** — a trigger lever (`trigger_lever()`)
+    pivoting at `pivot_pos`: a finger blade exiting the throat up-and-forward at
+    ~45°, and an actuator arm with an elongated fork slot driving the pot lever.
+    The pivot pin and spring anchor share a 3 mm rod (`rod_dia`), each captured
+    in blind-bore bosses. A return spring hooks a hole in the armature and a
+    rod in a body anchor boss, pulling the trigger to rest. See next-steps #6.
 
 ### Key parameters (top of `design3.scad`)
 
@@ -74,8 +80,22 @@ mounts yet):
 - `pot_shift` — shift along the pot long axis (+ve = toward the back/grip).
 - `pot_wall`, `pot_pin_gap`, `pot_lever_slot_w`, `pot_wire_gap_w` — cradle wall,
   solder-pin clearance, lever slot width, wire-exit gap width.
+- `rod_dia` — shared metal-rod diameter for BOTH the trigger pivot pin and the
+  spring anchor rod (default 3 mm, a common steel dowel / silver-steel size).
+- `trigger_thick`, `trigger_hub_dia` — trigger lever thickness / pivot hub.
+- `trigger_blade_len`, `trigger_blade_ang` — blade reach/angle out of the throat.
+- `trigger_arm_aim`, `trigger_arm_extra`, `trigger_arm_w` — actuator arm target,
+  extra length, width.
+- `trigger_fork_slot`, `trigger_fork_len`, `trigger_fork_pivot_ext` — elongated
+  fork slot (width / length / extension toward the pivot) that drives the pot lever.
+- `trigger_throat_ext`, `trigger_throat_lowext` — throat cutout swing clearance.
+- `pivot_boss_dia`, `pivot_hub_gap`, `pivot_bore_depth` — pivot boss / blind bore.
+- `spring_trigger_pos`, `spring_hole_dia` — spring hook hole in the armature.
+- `spring_anchor_pos`, `spring_boss_dia`, `spring_bore_depth` — body spring-anchor
+  boss + blind bore for the captured rod.
 - `part_to_render` — `body`, `body_potmark`, `pot_debug`, `hollow`, `left_shell`,
-  `right_shell`, `closed_assembly`, `exploded_assembly`.
+  `right_shell`, `trigger`, `partial_exploded_assembly`, `closed_assembly`,
+  `exploded_assembly`.
 
 ### Recorded trigger pivot location (data only — no trigger yet)
 
@@ -156,18 +176,17 @@ orthographic view (best for judging profiles).
    - Add hole diameter/pattern parameters; drill from the outside through the wall.
    - Add wiring clearance / channels down to the electronics bay.
 
-6. **Trigger + pivot.** *(Not yet in `design3.scad` — only the pivot LOCATION
-   and exit are recorded as data: `pivot_pos = [-12.81, 1.92]`, `pivot_dia = 4.0`,
-   `trigger_exit = [-8, 3]`.)*
-   - Design a trigger lever (a legacy `trigger_lever()` exists in `design.scad`
-     v1 as a starting point) to fit the new throat.
-   - **The trigger blade exits the body through the concave THROAT notch right
-     next to the pivot, at approx `[-8, 3]`** (agreed during planning) — NOT
-     lower/forward in the grip.
-   - Drill the pivot hole through both shells at `pivot_pos`.
-   - Add an actuator arm reaching from the pivot up to the pot lever along
-     `pot_axis_*`; the pot's `pot_inset`/`pot_shift` leave a clear channel at the
-     split for the arm to sweep.
+6. ~~**Trigger + pivot.**~~ **DONE** — `trigger_lever()` pivots at `pivot_pos`
+   with: a **finger blade** exiting the concave throat notch right next to the
+   pivot at ~`[-8, 3]` (`trigger_exit`), pointing up-and-forward at ~45°; and an
+   **actuator arm** with an enclosed **elongated fork slot** that straddles the
+   pot lever. The **pivot** uses a short rod captured in blind-bore bosses in
+   both halves (the trigger hub rotates in the gap between them); the throat has
+   a swing cutout (`trigger_throat_cut()`). A **return spring** hooks a 2 mm
+   hole in the armature (`spring_trigger_pos`) and a rod in a body anchor boss
+   (`spring_anchor_pos`), pulling the trigger toward rest. Pivot pin and spring
+   rod share one `rod_dia = 3 mm` stock. Render via `part_to_render = "trigger"`
+   or see it in the assemblies.
 
 7. **Cable exit** at the base of the grip (rear/bottom of the butt).
 

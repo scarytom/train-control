@@ -17,7 +17,7 @@ $fn = 48;
 
 // --- RENDER SELECTION ---
 // Options: "body"
-part_to_render = "partial_exploded_assembly";
+part_to_render = "exploded_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -348,7 +348,8 @@ module panel_cuts_right() {
 thumb_pos      = [ 9, -32 ];        // [X, Z] centre on the surface
 thumb_dia      = 6.2;              // 6mm button + clearance (matches the toggles)
 thumb_normal   = [ -0.16, 0, -0.99 ];  // measured outward surface normal
-thumb_drill    = 30;               // drill length through the wall
+thumb_drill    = 10;               // just deep enough to clear the wall (spans
+                                   // ~5mm outside to ~5mm inside the surface)
 
 // Full round cutter (both halves see it; keep_left/keep_right split it into two
 // semicircles at Y=0). Built along the local normal, starting outside the face.

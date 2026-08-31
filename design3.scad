@@ -17,7 +17,7 @@ $fn = 48;
 
 // --- RENDER SELECTION ---
 // Options: "body"
-part_to_render = "exploded_assembly";
+part_to_render = "left_shell";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -110,6 +110,112 @@ pot_axis_len   = 41.9;            // centerline length (mm)
 pot_axis_angle = -51.1;           // angle of the slot from +X in the X-Z plane (deg)
 pot_axis_mid   = [ (pot_axis_rear[0]+pot_axis_front[0])/2,
                    (pot_axis_rear[1]+pot_axis_front[1])/2 ];  // = ~[-46.5, -11.6]
+
+// ------------------------------------------------------------
+// LINEAR POT MOUNT (Bourns PTA3043, held directly by the shell — option B)
+// ------------------------------------------------------------
+// Body envelope 45 (L) x 9 (W) x 6.5 (H) mm, 30 mm travel. The pot lies with:
+//   local X = length  -> along the pot axis (pot_axis_angle in the X-Z plane)
+//   local Z = width   -> across the axis, in the X-Z plane
+//   local Y = height  -> along global Y; the slider LEVER emerges across the
+//                        split plane (toward one half).
+pot_len    = 45.0;   // body length (mm)
+pot_wid    = 9.0;    // body width (mm)
+pot_hgt    = 6.5;    // body height (mm) -> along Y
+pot_fit    = 0.4;    // clearance around the body in the pocket (mm)
+pot_inset  = 5.0;    // how far the pot TOP sits below the split (into +Y), so
+                     // the trigger armature can travel past it near Y=0. The
+                     // 10 mm lever still reaches across the split.
+pot_lever_side = 1;  // +1: lever/pocket offset toward +Y half; -1 toward -Y
+pot_wall   = 1.6;    // cradle wall thickness around the pocket (mm)
+pot_pin_gap = 3.0;   // clearance below the body for solder pins (mm, -Y of body)
+pot_lever_slot_w = 6.0;  // width of the lever clearance slot across the split
+pot_shift  = 10.0;   // shift along the pot LONG axis; +ve = toward the back of
+                     // the controller (grip/butt side), giving the trigger
+                     // armature an easier sweep to reach the pot.
+
+// Places children into the pot's local frame: origin at pot_axis_mid (Y=0),
+// local +X along the pot axis (local +X points toward the back/grip side of the
+// controller, so pot_shift>0 moves the pot toward the back). Rotation about
+// global Y by -pot_axis_angle maps local X onto the axis direction in the X-Z plane.
+module pot_place() {
+    translate([pot_axis_mid[0], 0, pot_axis_mid[1]])
+        rotate([0, -pot_axis_angle, 0])
+            translate([pot_shift, 0, 0])
+                children();
+}
+
+// The pot BODY occupies Y in [pot_inset, pot_inset+pot_hgt]; the top of the pot
+// is at Y=pot_inset (leaving ~pot_inset mm of clearance at the split for the
+// trigger armature). The LEVER (10 mm) protrudes from that face across the
+// split into -Y. The pot inserts from the split side and seats against a LEDGE
+// at Y = pot_inset+pot_hgt (the cradle floor), so only the lever crosses.
+module pot_body_envelope(extra = 0) {
+    pot_place()
+        translate([0, pot_inset + pot_hgt/2, 0])
+            cube([pot_len + 2*extra, pot_hgt + 2*extra, pot_wid + 2*extra], center = true);
+}
+
+// Cradle SOLID: a block around the pot that reaches from just below the pot top
+// (Y=pot_inset) out to the left half's OUTER wall, so it melds with the side
+// wall. Trimmed to the body so it fuses to the shell. Starting at Y=pot_inset
+// (not the split) leaves an open channel Y in [0, pot_inset] at the split for
+// the trigger armature to travel past. Lives only in the +Y (left) half.
+module pot_cradle_solid() {
+    y0 = pot_inset;          // cradle top (toward split)
+    y1 = 100;                // well beyond the outer wall
+    pot_place()
+        translate([0, (y0 + y1)/2, 0])
+            cube([pot_len + 2*pot_wall, y1 - y0, pot_wid + 2*pot_wall], center = true);
+}
+// (the caller intersects this with body_solid() and keep_left())
+
+// Pocket the pot body drops into (fit clearance), OPEN at the split face and
+// stopping at the LEDGE (Y = pot_inset + pot_hgt + fit). Beyond the ledge stays
+// solid. Depth spans from -2 (open past the split) up to the ledge.
+module pot_pocket() {
+    ledge = pot_inset + pot_hgt + pot_fit;   // +Y face of the pocket (the ledge)
+    y_lo  = -2;                               // open a bit past the split
+    pot_place()
+        translate([0, (y_lo + ledge)/2, 0])
+            cube([pot_len + 2*pot_fit, ledge - y_lo, pot_wid + 2*pot_fit], center = true);
+}
+
+// Lever clearance slot: a narrow channel on the split (Y ~ 0) crossing into the
+// other half, along the pot's travel, so the slider lever + trigger arm move
+// freely. Narrower than the pot so it doesn't undercut the cradle walls.
+module pot_lever_slot() {
+    pot_place()
+        translate([0, 0, 0])
+            cube([pot_len - 2, 10, pot_lever_slot_w], center = true);  // Y -5..+5 across split
+}
+
+// Pin clearance: channel beyond the ledge (deep +Y end) for solder pins.
+module pot_pin_clearance() {
+    pot_place()
+        translate([0, pot_inset + pot_hgt + pot_fit + pot_pin_gap/2, 0])
+            cube([pot_len - 4, pot_pin_gap + 2, pot_wid - 1], center = true);
+}
+
+// Wire-exit gap: a narrow notch through the short end of the cradle at the
+// HIGHER end of the pot (local -X end, higher in Z), from the pin region out
+// through the end wall, so the wires soldered to the pins escape into the cavity.
+pot_wire_gap_w = 3.0;   // wire gap width across the pot (local Z), mm
+module pot_wire_gap() {
+    y0 = pot_inset;                                       // from the pot top...
+    y1 = pot_inset + pot_hgt + pot_fit + pot_pin_gap + 3; // ...to beyond the pins
+    pot_place()
+        // at the -X (higher) end; thin in local X to punch the end wall,
+        // pot_wire_gap_w wide across the pot (local Z).
+        translate([-pot_len/2, (y0 + y1)/2, 0])
+            cube([pot_wall*2 + 4, y1 - y0, pot_wire_gap_w], center = true);
+}
+
+// ADD material for the cradle (left half only), and the CUTS to remove.
+module pot_mount_add() {
+    intersection() { pot_cradle_solid(); body_solid(); keep_left(); }
+}
+module pot_mount_cut() { pot_pocket(); pot_lever_slot(); pot_pin_clearance(); pot_wire_gap(); }
 
 // ------------------------------------------------------------
 // TRIGGER PIVOT LOCATION (was a small hole in the original outline)
@@ -327,12 +433,14 @@ module left_shell() {
             union() {
                 body_hollow();
                 intersection() { all_boss_columns(); body_solid(); }
+                pot_mount_add();
             }
             keep_left();
         }
         screw_holes();
         head_recesses();
         spigot_bores();
+        pot_mount_cut();
     }
 }
 
@@ -352,6 +460,7 @@ module right_shell() {
         }
         screw_holes();
         nut_recesses();
+        pot_lever_slot();   // clearance for the pot lever that crosses the split
     }
 }
 
@@ -361,6 +470,9 @@ if (part_to_render == "body") {
 } else if (part_to_render == "body_potmark") {
     body_solid();
     color("Crimson") pot_location_marker();
+} else if (part_to_render == "pot_debug") {
+    color("LightSteelBlue", 0.5) body_solid();
+    color("Red") pot_body_envelope();
 } else if (part_to_render == "hollow") {
     body_hollow();
 } else if (part_to_render == "left_shell") {

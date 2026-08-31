@@ -46,6 +46,13 @@ mounts yet):
    `body_hollow()` = `body_solid()` minus that cavity). Verified 1.5 mm walls.
 7. **Split into two halves** — `left_shell()` / `right_shell()` clip the hollow
    body at the Y = 0 plane into two mating halves.
+8. **Mate features** — six perimeter M3 bolt bosses (through-bolt + hex nut
+   trap) with alignment spigots (see next-steps #3).
+9. **Linear pot mount** — a solid cradle in the LEFT half holding a Bourns
+   PTA3043 (45×9×6.5 mm) along the recorded diagonal pot axis. The pot is inset
+   into the left half so only its 10 mm lever crosses the split (leaving a
+   channel for the trigger armature), seats against a ledge, and has a 3 mm
+   wire-exit gap at the pot's higher end. See next-steps #4.
 
 ### Key parameters (top of `design3.scad`)
 
@@ -61,7 +68,13 @@ mounts yet):
 - `screw_head_dia`, `screw_head_depth` — round bolt-head recess (left face).
 - `nut_af`, `nut_depth` — hex nut recess across-flats / depth (right face).
 - `spigot_dia`, `spigot_len`, `spigot_clear` — boss alignment spigot / fit.
-- `part_to_render` — `body`, `body_potmark`, `hollow`, `left_shell`,
+- `pot_len`, `pot_wid`, `pot_hgt` — PTA3043 body envelope (45 / 9 / 6.5 mm).
+- `pot_fit` — clearance around the pot body in the pocket.
+- `pot_inset` — how far the pot top sits below the split (armature clearance).
+- `pot_shift` — shift along the pot long axis (+ve = toward the back/grip).
+- `pot_wall`, `pot_pin_gap`, `pot_lever_slot_w`, `pot_wire_gap_w` — cradle wall,
+  solder-pin clearance, lever slot width, wire-exit gap width.
+- `part_to_render` — `body`, `body_potmark`, `pot_debug`, `hollow`, `left_shell`,
   `right_shell`, `closed_assembly`, `exploded_assembly`.
 
 ### Recorded trigger pivot location (data only — no trigger yet)
@@ -128,10 +141,15 @@ orthographic view (best for judging profiles).
    into left-half counterbores (no free-standing pins, so nothing floats). Each
    half is a clean 2-volume solid; the closed assembly mates without collision.
 
-4. **Linear pot mount** at the recorded `pot_axis_*`.
-   - Build a rail/pocket along the axis: `translate(pot_axis_mid)` then
-     `rotate([0, pot_axis_angle, 0])` (in the X-Z plane) and place the mount.
-   - Verify ≥ ~20 mm clearance remains between the pot and the raised button face.
+4. ~~**Linear pot mount** at the recorded `pot_axis_*`.~~ **DONE** — a solid
+   cradle (`pot_mount_add()`/`pot_mount_cut()`) in the LEFT half holds a Bourns
+   PTA3043 (45×9×6.5 mm) along the diagonal pot axis, placed via `pot_place()`
+   (`translate(pot_axis_mid)` + `rotate` by `pot_axis_angle`). The cradle melds
+   with the side wall; the pot is INSET (`pot_inset = 5 mm`) so only its 10 mm
+   lever crosses the split (leaving a clear channel for the trigger armature),
+   SHIFTED back along its axis (`pot_shift = +10 mm`) for an easier armature
+   sweep, and SEATS against a ledge. A 3 mm wire-exit gap sits at the pot's
+   higher end. Cradle is left-half only; the right half gets just the lever slot.
 
 5. **Button / switch holes on the raised blue face.**
    - Place holes on the ~50° button surface (normal = `button_face_normal`).

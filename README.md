@@ -23,10 +23,10 @@ Recommended: continue in **`design3.scad`** — it is a single self-contained fi
 - **Z** = up / down (the silhouette height).
 - **Y** = thickness. The two shell halves separate along **Y**; the profile is centred on Y = 0.
 
-## What the model currently produces
+## What the model produces
 
-`design3.scad` produces a **hollow two-part shell** (no trigger / internal
-mounts yet):
+`design3.scad` produces a complete, print-ready **hollow two-part shell** with
+trigger, internal pot mount, control panel and connector:
 
 1. **Ergonomic outline** — the real pistol-grip silhouette, embedded as an inline
    `polygon()` (`outline_points` / `outline_paths`), simplified from `Left.stl`.
@@ -47,25 +47,25 @@ mounts yet):
 7. **Split into two halves** — `left_shell()` / `right_shell()` clip the hollow
    body at the Y = 0 plane into two mating halves.
 8. **Mate features** — six perimeter M3 bolt bosses (through-bolt + hex nut
-   trap) with alignment spigots (see next-steps #3).
+   trap) with alignment spigots
 9. **Linear pot mount** — a solid cradle in the LEFT half holding a Bourns
    PTA3043 (45×9×6.5 mm) along the recorded diagonal pot axis. The pot is inset
    into the left half so only its 10 mm lever crosses the split (leaving a
    channel for the trigger armature), seats against a ledge, and has a 3 mm
-   wire-exit gap at the pot's higher end. See next-steps #4.
+   wire-exit gap at the pot's higher end.
 10. **Trigger + pivot + return spring** — a trigger lever (`trigger_lever()`)
     pivoting at `pivot_pos`: a BENT finger blade exiting the throat up-and-forward
     at ~45°, then curling back to a finger tip near `[0, 30]`, and an actuator arm
     with an elongated fork slot driving the pot lever.
     The pivot pin and spring anchor share a 3 mm rod (`rod_dia`), each captured
     in blind-bore bosses. A return spring hooks a hole in the armature and a
-    rod in a body anchor boss, pulling the trigger to rest. See next-steps #6.
+    rod in a body anchor boss, pulling the trigger to rest.
 11. **Control panel** — holes drilled into the raised blue face along its normal
     via a face frame built from the face's four corners (`panel_face_place`). The
     LEFT half has four 6 mm toggle holes (master on its own row; horn / reverse /
     lights in a row at 15 mm pitch); the RIGHT half has the LED battery-meter
     cutout (square 25.5 × 2.2 mm slot + two 3.5 mm end holes, 33 mm apart). All
-    clear of the bolt bosses. See next-steps #5.
+    clear of the bolt bosses.
 12. **Thumb button** — a 6 mm push-button hole (`thumb_button_cut()`) on the
     lower-front surface at `thumb_pos`, drilled along the local surface normal
     (`thumb_normal`). It sits ON the Y = 0 split, so it is halved into a matching
@@ -135,26 +135,6 @@ mounts yet):
 - `part_to_render` — `left_shell`, `right_shell`, `trigger`, `export_stl`,
   `partial_exploded_assembly`, `closed_assembly`, `exploded_assembly`.
 
-### Recorded trigger pivot location (data only — no trigger yet)
-
-The source STL had a small pivot hole; it is not cut into the body (carrying it
-through `minkowski()` distorted it into a slot). The body is kept solid and the
-location is recorded as data, to be drilled when the trigger is designed:
-
-- `pivot_pos = [-12.81, 1.92]` — [X, Z] centre of the trigger pivot
-- `pivot_dia = 4.0` — intended pin diameter (source marker was ~1.9 mm)
-
-### Recorded pot location (was the finger slot)
-
-The removed finger slot marks exactly where the internal **linear slide pot** mounts.
-It is preserved as data so the pot mount can be placed on the same axis:
-
-- `pot_axis_rear  = [-59.7,  4.7]`  — rear-upper end of the pot centreline [X, Z]
-- `pot_axis_front = [-33.4, -27.9]` — front-lower end [X, Z]
-- `pot_axis_len   = 41.9`           — centreline length (mm)
-- `pot_axis_angle = -51.1`          — angle from +X in the X-Z plane (deg)
-- `pot_axis_mid   ≈ [-46.5, -11.6]`
-
 ## How to render
 
 From the project root (paths in the file are relative):
@@ -173,84 +153,21 @@ openscad -o stl/export_plate.stl --render -D 'part_to_render="export_stl"' desig
 Tip: `--viewall` frames the model automatically; `--projection=o` gives a true
 orthographic view (best for judging profiles).
 
-## Next steps (roughly in order)
+## Assembly & fasteners
 
-1. ~~**Hollow the body into a shell.**~~ **DONE** — `wall = 1.5 mm`,
-   `inner_cavity()` = `body_core(grip_round + wall)` (re-rounded), verified
-   uniform 1.5 mm walls.
+- **Bolts:** six M3 through-bolts (`screw_boss_pos`). Each drops into a round
+  head recess on the LEFT outer face, through a 3.4 mm clearance hole, into a
+  hex **nut trap** (`nut_af = 5.5 mm` A/F) on the RIGHT face. Right-half
+  **spigots** register into left-half counterbores for alignment.
+- **Rods:** the trigger pivot pin and the spring anchor share one `rod_dia`
+  (3 mm) steel rod, each captured in blind-bore bosses.
+- **Print plate:** `part_to_render = "export_stl"` lays all three parts on the
+  bed in print orientation (left shell −90°, right shell / trigger +90° about X),
+  each on `Z = 0` and spaced along Y. Each part is manifold (`Simple: yes`).
+  The `left_shell` / `right_shell` / `trigger` modes export a single part in its
+  native orientation.
 
-2. ~~**Split into left / right shells along Y = 0.**~~ **DONE** —
-   `left_shell()` / `right_shell()` clip `body_hollow()` at Y = 0; render
-   options `hollow`, `left_shell`, `right_shell`, `closed_assembly`,
-   `exploded_assembly` all added.
-
-3. ~~**Mate features for the two halves.**~~ **DONE** — **six** M3 bolt bosses
-   spread around the perimeter (`screw_boss_pos`), kept CLEAR of the trigger↔pot
-   armature path through the head centre. Each boss is a solid column spanning
-   the split. Fastening is a **through-bolt with a captive nut**: an M3 bolt
-   drops into a **round head recess** on the LEFT outer face, passes through a
-   3.4 mm clearance hole in both halves, and is held by a nut in a **hexagonal
-   recess** (`nut_af = 5.5 mm` A/F) on the RIGHT outer face. Recesses follow the
-   local surface via `face_recess()` (handles the varying body thickness).
-   Alignment is integral to the bosses: right-half male **spigots** register
-   into left-half counterbores (no free-standing pins, so nothing floats). Each
-   half is a clean 2-volume solid; the closed assembly mates without collision.
-
-4. ~~**Linear pot mount** at the recorded `pot_axis_*`.~~ **DONE** — a solid
-   cradle (`pot_mount_add()`/`pot_mount_cut()`) in the LEFT half holds a Bourns
-   PTA3043 (45×9×6.5 mm) along the diagonal pot axis, placed via `pot_place()`
-   (`translate(pot_axis_mid)` + `rotate` by `pot_axis_angle`). The cradle melds
-   with the side wall; the pot is INSET (`pot_inset = 5 mm`) so only its 10 mm
-   lever crosses the split (leaving a clear channel for the trigger armature),
-   SHIFTED back along its axis (`pot_shift = +10 mm`) for an easier armature
-   sweep, and SEATS against a ledge. A 3 mm wire-exit gap sits at the pot's
-   higher end. Cradle is left-half only; the right half gets just the lever slot.
-
-5. ~~**Button / switch holes on the raised blue face.**~~ **DONE** — the control
-   panel is drilled into the raised blue face along the face normal, using a
-   local face frame (`panel_face_place(u,v)`) built directly from the face's four
-   corners. The LEFT half (`+Y`) carries **four 6 mm toggle holes**: the **master
-   switch on its own upper row** and **horn / reverse / lights in a lower row**
-   (15 mm pitch). The RIGHT half (`-Y`) carries the **LED battery-meter cutout**:
-   a square `25.5 × 2.2 mm` slot with a `3.5 mm` hole at each end, `33 mm` apart.
-   All holes stay clear of the two bolt bosses that pass under the face.
-
-6. ~~**Trigger + pivot.**~~ **DONE** — `trigger_lever()` pivots at `pivot_pos`
-   with: a **finger blade** exiting the concave throat notch right next to the
-   pivot at ~`[-8, 3]` (`trigger_exit`), pointing up-and-forward at ~45°, then
-   BENDING at a knee back to a curled finger tip near `[0, 30]`; and an
-   **actuator arm** with an enclosed **elongated fork slot** that straddles the
-   pot lever. The **pivot** uses a short rod captured in blind-bore bosses in
-   both halves (the trigger hub rotates in the gap between them); the throat has
-   a swing cutout (`trigger_throat_cut()`). A **return spring** hooks a 2 mm
-   hole in the armature (`spring_trigger_pos`) and a rod in a body anchor boss
-   (`spring_anchor_pos`), pulling the trigger toward rest. Pivot pin and spring
-   rod share one `rod_dia = 3 mm` stock. Render via `part_to_render = "trigger"`
-   or see it in the assemblies.
-
-7. ~~**Cable exit / connector** at the base of the grip.~~ **DONE** — a
-   panel-mount **DX16** aviation socket on the rear of the grip butt at
-   `cable_pos = [65, 12]`, along the local surface normal. Since a threaded
-   connector needs a flat full-thickness seat, it is NOT a split semicircle:
-   instead a moulded round **pad** (`connector_pad()`, Ø19, 2 mm proud + 3 mm in)
-   on the LEFT shell crosses the seam so the Ø16 hole stays centred, the RIGHT
-   shell has a matching recess, and an internal **reinforcing collar**
-   (`connector_reinforce()`, LEFT half only) thickens the wall for strength. The
-   nut tightens on the inside; ~2 mm of the 7 mm thread projects past the pad.
-
-8. ~~**Validate & export.**~~ **DONE** — full CGAL renders (`grip_round = 3`,
-   minkowski rounding) with no errors; each part is manifold (`Simple: yes`).
-   `part_to_render = "export_stl"` renders a **single print-ready plate** with
-   all three parts (both shells + trigger) pre-rotated to their print
-   orientation (split face on the bed: left shell −90°, right shell / trigger
-   +90° about X), sat on `Z = 0` and spaced apart along Y. Export it in one go:
-
-   `openscad -o stl/export_plate.stl --render -D 'part_to_render="export_stl"' design3.scad`
-
-   The individual `left_shell` / `right_shell` / `trigger` part modes are still
-   available for exporting a single part (in the model's native orientation).
-
-## Known cleanups / notes
+## Notes
 
 - The inline outline is a simplified version of the DXF (49 points via
   Douglas-Peucker, ~0.3 mm tolerance). Regenerate with a tighter tolerance if a

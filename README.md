@@ -3,6 +3,7 @@
 We are designing a more ergonomic hand controller for working with minature railway locomotives.  This is an improvement
 over the [4QD RBT Hand Control](https://www.4qd.co.uk/product/hand-control-box/).
 
+# Enclosure Design (3D Print) and Assembly
 ## Files
 
 | File                            | Purpose                                                              | Status                |
@@ -175,3 +176,47 @@ orthographic view (best for judging profiles).
   (`openscad --render ...`) and is slow (~15–30 s). For fast iteration while
   working on other features, set `grip_round = 0`, then restore it for final
   renders / export.
+
+# Circuit Design and Parts
+
+## Circuit References
+https://www.4qd.co.uk/docs/din-socket-wiring/
+https://www.4qd.co.uk/docs/rbt-plug-alignment/
+https://www.4qd.co.uk/docs/rbt-circuit-diagram/
+
+## BOM
+### DPST main on/off switch
+
+### SPST lights switch
+
+### SPST reverse switch
+
+### Momentary on-off-on switch for horn 1/2
+mom-off-mom
+https://www.aliexpress.com/item/32763452108.html
+or, use separate select switch and button (see below)
+
+### DPST horn select switch
+Or, go with a button for the horn and a selector switch for the choosing sounds
+
+### Momentary Horn Button
+
+### Slide potentiometer for accelerator
+10k
+https://uk.farnell.com/w/c/passive-components/potentiometers-trimmers-accessories/slide-potentiometers?sort=P_INVENTORY%7C1
+https://www.farnell.com/datasheets/3215812.pdf
+
+### Diodes
+1N4001 Rectifier Diode 1A 50V
+Battery meter (BCM)
+Simple voltage divider – c/f
+https://www.4qd.co.uk/product/battery-condition-meter/
+
+### 8-core cable
+https://www.amazon.co.uk/gp/product/B005EHZ6UI
+7 x 0.2mm multicore cable
+https://www.4qd.co.uk/product/control-cable-multicore/
+
+### 8-pin aviation connectors (GX16)
+https://www.amazon.co.uk/gp/product/B07VNKZB65
+https://www.aliexpress.com/item/1005006731992794.html

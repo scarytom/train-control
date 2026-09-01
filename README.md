@@ -7,13 +7,13 @@ based on the shape of an existing printed controller (`Left.stl` / `Right.stl`).
 
 | File                            | Purpose                                                              | Status                |
 |---------------------------------|----------------------------------------------------------------------|-----------------------|
-| `design3.scad`                  | **Current working model.** Self-contained (no external files).       | Active — work here    |
+| `design.scad`                   | **Current working model.** Self-contained (no external files).       | Active — work here    |
 | `profiles/body_outline.dxf`     | Ergonomic outline projected from `Left.stl`. Used by `design2.scad`. | Input for v2          |
 | `ref/Left.stl`, `ref/Right.stl` | Example printed controller shells (ground-truth ergonomic shape).    | Reference             |
 | `ref/controller3.jpg`           | Photo of the reference controller.                                   | Reference             |
 | `renders/`                      | Rendered preview PNGs.                                               | Build output          |
 
-Recommended: continue in **`design3.scad`** — it is a single self-contained file.
+Recommended: continue in **`design.scad`** — it is a single self-contained file.
 
 ## Coordinate convention
 
@@ -23,7 +23,7 @@ Recommended: continue in **`design3.scad`** — it is a single self-contained fi
 
 ## What the model produces
 
-`design3.scad` produces a complete, print-ready **hollow two-part shell** with
+`design.scad` produces a complete, print-ready **hollow two-part shell** with
 trigger, internal pot mount, control panel and connector:
 
 1. **Ergonomic outline** — the real pistol-grip silhouette, embedded as an inline
@@ -78,7 +78,7 @@ trigger, internal pot mount, control panel and connector:
     (`connector_reinforce()`, LEFT half only) thickens the wall around the socket
     for strength. The Ø16 bore (`connector_hole()`) cuts through both halves.
 
-### Key parameters (top of `design3.scad`)
+### Key parameters (top of `design.scad`)
 
 - `grip_thick`, `head_thick` — body thickness (Y) at grip / head.
 - `taper_head_x`, `taper_grip_x` — where the thickness taper starts/ends along X.
@@ -139,13 +139,13 @@ From the project root (paths in the file are relative):
 
 ```bash
 # quick preview (isometric)
-openscad -o renders/iso.png --camera=200,-260,150,-5,0,5 --viewall design3.scad
+openscad -o renders/iso.png --camera=200,-260,150,-5,0,5 --viewall design.scad
 
 # clean orthographic side view (the ergonomic silhouette)
-openscad -o renders/side.png --camera=0,300,0,0,0,0 --viewall --projection=o design3.scad
+openscad -o renders/side.png --camera=0,300,0,0,0,0 --viewall --projection=o design.scad
 
 # export the print-ready plate (all three parts, print orientation)
-openscad -o stl/export_plate.stl --render -D 'part_to_render="export_stl"' design3.scad
+openscad -o stl/export_plate.stl --render -D 'part_to_render="export_stl"' design.scad
 ```
 
 Tip: `--viewall` frames the model automatically; `--projection=o` gives a true

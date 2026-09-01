@@ -5,15 +5,13 @@ based on the shape of an existing printed controller (`Left.stl` / `Right.stl`).
 
 ## Files
 
-| File                            | Purpose                                                                           | Status                |
-|---------------------------------|-----------------------------------------------------------------------------------|-----------------------|
-| `design3.scad`                  | **Current working model.** Self-contained (no external files).                    | Active — work here    |
-| `design2.scad`                  | Same geometry as v3 but loads the outline from `profiles/body_outline.dxf`.       | Superseded by v3      |
-| `design.scad`                   | Original hand-drawn v1 (chunky constant-thickness box, trigger, bosses, cutouts). | Legacy reference only |
-| `profiles/body_outline.dxf`     | Ergonomic outline projected from `Left.stl`. Used by `design2.scad`.              | Input for v2          |
-| `ref/Left.stl`, `ref/Right.stl` | Example printed controller shells (ground-truth ergonomic shape).                 | Reference             |
-| `controller3.jpg`               | Photo of the reference controller.                                                | Reference             |
-| `renders/`                      | Rendered preview PNGs.                                                            | Build output          |
+| File                            | Purpose                                                              | Status                |
+|---------------------------------|----------------------------------------------------------------------|-----------------------|
+| `design3.scad`                  | **Current working model.** Self-contained (no external files).       | Active — work here    |
+| `profiles/body_outline.dxf`     | Ergonomic outline projected from `Left.stl`. Used by `design2.scad`. | Input for v2          |
+| `ref/Left.stl`, `ref/Right.stl` | Example printed controller shells (ground-truth ergonomic shape).    | Reference             |
+| `ref/controller3.jpg`           | Photo of the reference controller.                                   | Reference             |
+| `renders/`                      | Rendered preview PNGs.                                               | Build output          |
 
 Recommended: continue in **`design3.scad`** — it is a single self-contained file.
 

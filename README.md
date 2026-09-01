@@ -1,7 +1,7 @@
 # Train Controller (slot-car hand controller)
 
-Parametric OpenSCAD model of an ergonomic pistol-grip slot-car controller,
-based on the shape of an existing printed controller (`Left.stl` / `Right.stl`).
+We are designing a more ergonomic hand controller for working with minature railway locomotives.  This is an improvement
+over the [4QD RBT Hand Control](https://www.4qd.co.uk/product/hand-control-box/).
 
 ## Files
 

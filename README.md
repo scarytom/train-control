@@ -186,44 +186,59 @@ https://www.4qd.co.uk/docs/rbt-circuit-diagram/
 
 ## BOM
 ### DPST main on/off switch
-- https://uk.farnell.com/multicomp-pro/1md1t1b5m1qe/toggle-switch-dpdt-5a-120vac-panel/dp/9473394
+- latching push button
+- APEM 8646A
+- https://cpc.farnell.com/apem/8646a/dpdt-latching-push-button/dp/SW02376
+- 6.5mm panel cutout hole
+- Also need button cap: https://cpc.farnell.com/apem/u482/black-cap-spdt-push-button/dp/SW02388
 
 ### SPST lights switch
-
+- multicomp 1MS2T6B11M1QE
+- https://cpc.farnell.com/multicomp-pro/1ms1t6b11m1qe/switch-spdt/dp/SW02863
+- 6.5mm panel cutout hole
 
 ### SPST reverse switch
+- multicomp 1MS2T6B11M1QE
+- https://cpc.farnell.com/multicomp-pro/1ms1t6b11m1qe/switch-spdt/dp/SW02863
+- 6.5mm panel cutout hole
 
-### Momentary on-off-on switch for horn 1/2
-- mom-off-mom
-- https://www.aliexpress.com/item/32763452108.html
-- or, use separate select switch and button (see below)
-
-### DPST horn select switch
-- a selector switch for the choosing sounds
-- 
-
-### Momentary Horn Button
-- https://uk.farnell.com/multicomp-pro/r13-24al-05-bb/switch-spst-3a-125v-tht/dp/1634693?MER=BR-MER-CA-RECO-STM71778
-- 7.2mm clearance hole
+### Momentary Horn Buttons
+We use two SPDT momentary push buttons in a mechanical interlock.
+- multicomp 8MS8P1B05M1QES
+- https://cpc.farnell.com/multicomp-pro/mc8ms8p1b05m1qes/switch-spdt-on-mom-solder/dp/SW05800
+- 4.8mm clearance hole
 
 ### Slide potentiometer for accelerator
-- 10k
-- https://uk.farnell.com/w/c/passive-components/potentiometers-trimmers-accessories/slide-potentiometers?sort=P_INVENTORY%7C1
-- https://www.farnell.com/datasheets/3215812.pdf
+- Bourns PTA4543-2015DP-B103
+- 10k linear taper 45mm single gang
+- https://cpc.farnell.com/bourns/pta4543-2015dp-b103/potentiometer-10k-45mm-slide/dp/RE06839
 
 ### Diodes
 - 1N4001 Rectifier Diode 1A 50V
-- https://uk.farnell.com/multicomp-pro/1n4001/rectifier-single-50v-1a-do-204al/dp/4245041
+- https://cpc.farnell.com/vishay/1n4001-e3-54/rectifier-single-1a-50v-do-204al/dp/SC17841
 
 ### Battery meter (BCM)
 - Simple voltage divider – c/f
 - https://www.4qd.co.uk/product/battery-condition-meter/
 
 ### 8-core cable
-- https://www.amazon.co.uk/gp/product/B005EHZ6UI
 - 7 x 0.2mm multicore cable
+- https://cpc.farnell.com/pro-elec/pelb0640/cable-7-2-8a-unshielded-black/dp/CB22630
 - https://www.4qd.co.uk/product/control-cable-multicore/
+- https://www.amazon.co.uk/gp/product/B005EHZ6UI
 
 ### 8-pin aviation connectors (GX16)
+- https://cpc.farnell.com/pro-signal/av19318/multipole-panel-plug-8p/dp/AV19318
+- https://cpc.farnell.com/pro-signal/av19305/multipole-socket-8-pole/dp/AV19305
 - https://www.amazon.co.uk/gp/product/B07VNKZB65
 - https://www.aliexpress.com/item/1005006731992794.html
+
+### Pins
+- https://cpc.farnell.com/k-s/ks8164/brass-rod-solid-1-8-x-12/dp/FN03117
+- https://cpc.farnell.com/k-s/ks8163/brass-rod-solid-3-32-x-12/dp/FN03116
+
+### Spring
+- https://cpc.farnell.com/duratool/d01893/spring-set-200pc/dp/FN02651
+
+### bolts
+- 

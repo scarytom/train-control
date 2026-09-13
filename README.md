@@ -187,35 +187,47 @@ https://www.4qd.co.uk/docs/rbt-circuit-diagram/
 ## BOM
 ### DPST main on/off switch
 - latching push button
-- APEM 8646A
-- https://cpc.farnell.com/apem/8646a/dpdt-latching-push-button/dp/SW02376
-- 6.5mm panel cutout hole
+- Nidec MFS201N-Z
+- https://www.mouser.co.uk/en/ProductDetail/Nidec-Components/MFS201N-Z
+- 2x 2.5mm holes 19mm apart (centre-to-centre) with a 9.5mm x 5mm rectangular cut-out in between.
 - Also need button cap: https://cpc.farnell.com/apem/u482/black-cap-spdt-push-button/dp/SW02388
+
+https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=869
+https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=867
 
 ### SPST lights switch
 - multicomp 1MS2T6B11M1QE
 - https://cpc.farnell.com/multicomp-pro/1ms1t6b11m1qe/switch-spdt/dp/SW02863
 - 6.5mm panel cutout hole
+- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=872
+- 6.35mm panel cut-out hole
 
 ### SPST reverse switch
 - multicomp 1MS2T6B11M1QE
 - https://cpc.farnell.com/multicomp-pro/1ms1t6b11m1qe/switch-spdt/dp/SW02863
 - 6.5mm panel cutout hole
+- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=872
+- 6.35mm panel cut-out hole
 
 ### Momentary Horn Buttons
 We use two SPDT momentary push buttons in a mechanical interlock.
 - multicomp 8MS8P1B05M1QES
 - https://cpc.farnell.com/multicomp-pro/mc8ms8p1b05m1qes/switch-spdt-on-mom-solder/dp/SW05800
 - 4.8mm clearance hole
+- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=893
+- 5mm mounting hole
 
 ### Slide potentiometer for accelerator
-- Bourns PTA4543-2015DP-B103
+- Bourns PTA3043-2015DP-B103
 - 10k linear taper 45mm single gang
-- https://cpc.farnell.com/bourns/pta4543-2015dp-b103/potentiometer-10k-45mm-slide/dp/RE06839
+- https://www.mouser.co.uk/en/ProductDetail/Bourns/PTA3043-2015DPB103
+- https://www.mouser.co.uk/en/ProductDetail/Bourns/PTA3043-2015CPB103
+- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=3247
 
 ### Diodes
 - 1N4001 Rectifier Diode 1A 50V
 - https://cpc.farnell.com/vishay/1n4001-e3-54/rectifier-single-1a-50v-do-204al/dp/SC17841
+- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=1888
 
 ### Battery meter (BCM)
 - Simple voltage divider – c/f
@@ -226,6 +238,7 @@ We use two SPDT momentary push buttons in a mechanical interlock.
 - https://cpc.farnell.com/pro-elec/pelb0640/cable-7-2-8a-unshielded-black/dp/CB22630
 - https://www.4qd.co.uk/product/control-cable-multicore/
 - https://www.amazon.co.uk/gp/product/B005EHZ6UI
+- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=1496
 
 ### 8-pin aviation connectors (GX16)
 - https://cpc.farnell.com/pro-signal/av19318/multipole-panel-plug-8p/dp/AV19318
@@ -234,11 +247,18 @@ We use two SPDT momentary push buttons in a mechanical interlock.
 - https://www.aliexpress.com/item/1005006731992794.html
 
 ### Pins
-- https://cpc.farnell.com/k-s/ks8164/brass-rod-solid-1-8-x-12/dp/FN03117
-- https://cpc.farnell.com/k-s/ks8163/brass-rod-solid-3-32-x-12/dp/FN03116
+- https://www.amazon.co.uk/dp/B0DBYCCZ2J
 
 ### Spring
 - https://cpc.farnell.com/duratool/d01893/spring-set-200pc/dp/FN02651
 
 ### bolts
-- 
+- https://www.amazon.co.uk/dp/B0DGSY35WC
+- https://www.amazon.co.uk/dp/B0D8SG7R6F
+
+### miscellaneous
+https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=4149
+
+# test probes
+https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=1725
+https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=1724

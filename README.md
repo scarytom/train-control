@@ -255,10 +255,3 @@ We use two SPDT momentary push buttons in a mechanical interlock.
 ### bolts
 - https://www.amazon.co.uk/dp/B0DGSY35WC
 - https://www.amazon.co.uk/dp/B0D8SG7R6F
-
-### miscellaneous
-https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=4149
-
-# test probes
-https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=1725
-https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=1724

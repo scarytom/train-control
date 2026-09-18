@@ -244,7 +244,11 @@ orthographic view (best for judging profiles).
 - please place some eyes to which cable ties can be attached in judicious places
 - feel free to suggest other cable management solutions that might work better
 
-### 12. discuss joining the 2 halves
+### 12. button caps
+- the 2 horn buttons have very small, hard-plastic cylinders to push, and these dig into the user's thumb
+- can we design a simple button cap that can be affixed to the buttons after they have been mounted in the controller
+
+### 13. discuss joining the 2 halves
 - the butt joint we have between the 2 halves gives some flex around the joint, particularly on face XXXX
 - discuss ways to improve the joint
 

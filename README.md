@@ -178,8 +178,75 @@ orthographic view (best for judging profiles).
   renders / export.
 
 ## TODO
+### 1. Identify the faces
+- agree on a colour for each of the faces, so we can identify them
+- make a projection in the x-z plane, looking down the y-axis, and colour each face
+- I expect there to be 9 coloured faces
+- commit a PNG and document it in this README
+- I will then re-write the remaining TODOs to use this colour scheme.
 
-- 
+### 2. Narrower gap for the trigger lever
+- The trigger lever is currently 6mm thick, and the gap for it is 8mm wide.
+- I'd like to make the pivot hub 0.5mm taller on each side, reducing the slot width to 7mm
+
+### 3. Refine the pot mounting
+- The linear pot now has different dimensions (see the BOM for details below)
+- The mounting should consist of a solid box platform with 4 holes for the mounting lugs to push into.
+- The mounting box should be 30mm long x 15mm wide, and 18mm high.
+- In order to prevent the pot lifting, there should be 2 side panels that clip over the top of the pot to grip it at the edges on the top surface of the pot
+- The ends of the pot remain in the open, to allow wires to be soldered to the pins
+- The pot also needs to be moved closer to the XXXX face, to allow room for the spring
+- The trigger pivot will need to move in the same direction so that it remains in line with the middle of the pot
+- The trigger slot will need to change to accomodate this.
+
+### 3. move the hub for the trigger spring
+- The hub for the trigger spring should move in line with the end of the pot
+- The hub should be touching the XXXX face
+
+### 4. Horn buttons
+- There will now be 2 horn buttons
+- One will be mounted in each side of the controller
+- See the BOM for the hole size required
+- The horn buttons will now be mounted in the XXXX face
+
+### 5. power switch
+- The power switch will now be a slide switch not a toggle
+- See the BOM for panel cut-out requirements
+- The switch will remain on its own on the left side
+
+### 6. lights / reverse switch
+- We no longer need a horn select switch, so there are only two toggle switches on the top panel
+- These should occupy the top and bottom holes, with the middle hole filled in
+- Note the new hole size in the BOM, and the need for secondary holes for the locking washer
+
+### 7. Shorten trigger slightly
+- The part of the trigger lever where the user will place their finger is too long
+- Reduce by 5mm
+
+### 8. Trigger slot.
+- The slot in the trigger is not wide enough for the lever on the pot
+- Make the slot 6.5mm wide
+
+### 9. Handle size
+- The handle is too short to be held comfortably in adult hand.
+- The handle needs to be around 25mm longer, extended toward the XXXX face
+
+### 10. socket mounting
+- the 15mm ring for the aviation socket is too wide to work.
+- The socket will now be mounted centrally in a 25mm x 25mm square of sheet metal
+- The metal will be 1mm thick
+- create a square hole with slots for this metal square to slide into
+- you will need to flare the bottom of the handle out slightly in the y-axis to accommodate this
+
+### 11. cable tidy
+- we will need to keep wires away from the moving trigger lever
+- wires will run as along the inside of the handset, along the surfaces with the highest (and lowest) y values
+- please place some eyes to which cable ties can be attached in judicious places
+- feel free to suggest other cable management solutions that might work better
+
+### 12. discuss joining the 2 halves
+- the butt joint we have between the 2 halves gives some flex around the joint, particularly on face XXXX
+- discuss ways to improve the joint
 
 # Circuit Design and Parts
 

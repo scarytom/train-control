@@ -177,6 +177,10 @@ orthographic view (best for judging profiles).
   working on other features, set `grip_round = 0`, then restore it for final
   renders / export.
 
+## TODO
+
+- 
+
 # Circuit Design and Parts
 
 ## Circuit References
@@ -186,52 +190,48 @@ https://www.4qd.co.uk/docs/rbt-circuit-diagram/
 
 ## BOM
 ### DPST main on/off switch
-- latching push button
-- Nidec MFS201N-Z
-- https://www.mouser.co.uk/en/ProductDetail/Nidec-Components/MFS201N-Z
-- 2x 2.5mm holes 19mm apart (centre-to-centre) with a 9.5mm x 5mm rectangular cut-out in between.
-- Also need button cap: https://cpc.farnell.com/apem/u482/black-cap-spdt-push-button/dp/SW02388
-
-https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=869
-https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=867
+- DPDT 2-Position On-On Mini Slide Switch
+- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=869
+- 2x 2.5mm fixing holes 19mm centre-to-centre
+- 4.5mm x 10mm slot central longways between fixing holes 
 
 ### SPST lights switch
-- multicomp 1MS2T6B11M1QE
+- multicomp 1MS2T6B11M1QE Flat Toggle Switch, SPDT
 - https://cpc.farnell.com/multicomp-pro/1ms1t6b11m1qe/switch-spdt/dp/SW02863
-- 6.5mm panel cutout hole
+- can substitute Round Toggle Switch, SPST
 - https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=872
-- 6.35mm panel cut-out hole
+- 6.5mm mounting hole, with a 2.5mm hole placed 6.5mm above it (centre-to-centre) for the locking lug
 
 ### SPST reverse switch
-- multicomp 1MS2T6B11M1QE
-- https://cpc.farnell.com/multicomp-pro/1ms1t6b11m1qe/switch-spdt/dp/SW02863
-- 6.5mm panel cutout hole
-- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=872
-- 6.35mm panel cut-out hole
+- same as lights switch
 
 ### Momentary Horn Buttons
 We use two SPDT momentary push buttons in a mechanical interlock.
-- multicomp 8MS8P1B05M1QES
+- multicomp 8MS8P1B05M1QES (has a 2.5mm diameter button)
 - https://cpc.farnell.com/multicomp-pro/mc8ms8p1b05m1qes/switch-spdt-on-mom-solder/dp/SW05800
-- 4.8mm clearance hole
-- https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=893
 - 5mm mounting hole
 
 ### Slide potentiometer for accelerator
-- Bourns PTA3043-2015DP-B103
-- 10k linear taper 45mm single gang
-- https://www.mouser.co.uk/en/ProductDetail/Bourns/PTA3043-2015DPB103
-- https://www.mouser.co.uk/en/ProductDetail/Bourns/PTA3043-2015CPB103
+- Bourns PTA Range - PTA2043-2010CIB103
+- 10k linear single gang slide pot
 - https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=3247
+- https://www.bourns.com/docs/Product-Datasheets/pta.pdf
+- 35.5mm long x 9.5mm wide x 6.5mm deep
+- slide has a 20mm range
+- slide lever is 10mm tall x 5mm wide x 1.75mm thick
+- 4x 1.5mm wide, 3mm tall fixing pins on the underside, a pair on each side
+- fixing pins are centre-to-centre 22.8mm apart on the left side, 25.2mm apart on the right side
+- wires attach to 0.8mm pins at both ends on the underside, so these must be accessible 
 
 ### Diodes
 - 1N4001 Rectifier Diode 1A 50V
-- https://cpc.farnell.com/vishay/1n4001-e3-54/rectifier-single-1a-50v-do-204al/dp/SC17841
 - https://www.bitsboxuk.com/index.php?main_page=product_info&products_id=1888
 
 ### Battery meter (BCM)
 - Simple voltage divider – c/f
 - https://www.4qd.co.uk/product/battery-condition-meter/
+- 2x 3.5mm fixing holes 33mm centre-to-centre
+- 25.5mm x 2.2mm slot central longways between fixing holes
 
 ### 8-core cable
 - 7 x 0.2mm multicore cable
@@ -245,6 +245,7 @@ We use two SPDT momentary push buttons in a mechanical interlock.
 - https://cpc.farnell.com/pro-signal/av19305/multipole-socket-8-pole/dp/AV19305
 - https://www.amazon.co.uk/gp/product/B07VNKZB65
 - https://www.aliexpress.com/item/1005006731992794.html
+- 15mm Cutout diameter
 
 ### Pins
 - https://www.amazon.co.uk/dp/B0DBYCCZ2J

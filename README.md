@@ -212,17 +212,17 @@ See [Face identification](#face-identification) section above.
 - The trigger lever is 6mm thick (`trigger_thick`), with 0.5mm clearance per side
 - Total slot width = 7mm (set by `pivot_hub_gap = trigger_thick/2 + 0.5`)
 
-### 3. Refine the pot mounting (PARTIAL - pot box done, trigger pivot still to do)
+### ~~3. Refine the pot mounting~~ ✓ DONE
 - ✓ Updated pot dimensions to PTA2043: 35.5mm × 9.5mm × 6.5mm
 - ✓ Created solid box platform (30mm × 15mm × 18mm) with 4 blind holes for fixing pins
 - ✓ Pin holes are 1.6mm diameter (tight fit for 1.5mm pins), 4mm deep
 - ✓ Pin spacing: 22.8mm left side, 25.2mm right side (per datasheet)
-- ✓ Added 2 side clips to grip the pot top and prevent lifting
+- ✓ Added 4 clips (3mm wide each) to grip the pot top and prevent lifting
 - ✓ Ends remain open for wire soldering access
-- ✓ Pot moved 5mm closer to front (black) face (`pot_shift` reduced from 10 to 5)
-- ✓ Lever slot widened to 6.5mm (per TODO #8)
-- ⬜ The trigger pivot will need to move in the same direction so that it remains in line with the middle of the pot
-- ⬜ The trigger slot will need to change to accommodate this.
+- ✓ Pot moved 6mm closer to front (black) face (`pot_shift` changed to -1)
+- ✓ Trigger pivot moved to align with pot position
+- ✓ Trigger blade straightened with bend at [-10, 10], tip at [0, 25]
+- ✓ Throat cutout extended 5mm toward black face
 
 ### 3. move the hub for the trigger spring
 - The hub for the trigger spring should move in line with the end of the pot
@@ -244,9 +244,8 @@ See [Face identification](#face-identification) section above.
 - These should occupy the top and bottom holes, with the middle hole filled in
 - Note the new hole size in the BOM, and the need for secondary holes for the locking washer
 
-### 7. Shorten trigger slightly
-- The part of the trigger lever where the user will place their finger is too long
-- Reduce by 5mm
+### ~~7. Shorten trigger slightly~~ ✓ DONE
+- ✓ Trigger blade shortened by 5mm (from 25mm to 20mm)
 
 ### 8. Trigger slot.
 - The slot in the trigger is not wide enough for the lever on the pot

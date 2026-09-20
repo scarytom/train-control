@@ -233,7 +233,7 @@ module pot_lever_slot() {
 // Centre of the trigger-lever pivot, in the outline X-Z plane on Y=0
 // (from the small marker hole in the source STL). The pivot is captured in
 // blind-bore bosses in both shells (see pivot_boss / pivot_bore).
-pivot_pos = [-12.81, 1.92];   // [X, Z] centre of the trigger pivot
+pivot_pos = [-16.58, 6.59];   // [X, Z] centre of the trigger pivot (moved with pot)
 // A single metal ROD diameter is used for BOTH the trigger pivot pin and the
 // spring anchor rod (cut from the same stock). 3mm is a common, easily-sourced
 // steel dowel / silver-steel size.
@@ -441,10 +441,9 @@ trigger_bore    = pivot_dia + 0.4;    // pivot bore in the trigger (running fit)
 trigger_hub_dia = 10.0;   // hub diameter around the pivot
 // Blade: exits the throat at trigger_exit and extends OUTSIDE the body up-and-
 // forward (+X, +Z) at ~45 deg for the finger to pull.
-trigger_blade_len = 25.0;             // blade length beyond the exit (mm)
+trigger_blade_len = 20.0;             // blade length beyond the exit (mm)
 trigger_blade_ang = 45;               // direction from the exit, deg (+X,+Z)
-trigger_blade_tip = [ trigger_exit[0] + trigger_blade_len*cos(trigger_blade_ang),
-                      trigger_exit[1] + trigger_blade_len*sin(trigger_blade_ang) ];
+trigger_blade_tip = [ 0, 25 ];        // finger tip position [X, Z]
 trigger_blade_w   = 7.0;        // blade width
 // The blade is BENT: it runs straight from the exit to a knee, then curls back
 // toward the finger tip. trigger_blade_knee is partway along the first (45 deg)
@@ -484,24 +483,20 @@ spring_bore_depth  = 8.0;       // blind bore depth into each anchor boss
 
 // 2D trigger profile in the X-Z plane (before extrude).
 module trigger_profile_2d() {
+    trigger_blade_knee = [-10, 10];  // bend point
     difference() {
         union() {
             // pivot hub
             translate(pivot_pos) circle(d = trigger_hub_dia);
-            // blade: hub -> throat exit -> finger tab
+            // blade: pivot to knee
             hull() {
-                translate(pivot_pos) circle(d = trigger_blade_w);
-                translate(trigger_exit) circle(d = trigger_blade_w);
-            }
-            // bent blade: exit -> knee (straight up-forward) ...
-            hull() {
-                translate(trigger_exit)      circle(d = trigger_blade_w);
+                translate(pivot_pos)        circle(d = trigger_blade_w);
                 translate(trigger_blade_knee) circle(d = trigger_blade_w);
             }
-            // ... then knee -> curled tip (bends back toward the finger)
+            // blade: knee to tip (bends toward underbelly)
             hull() {
                 translate(trigger_blade_knee) circle(d = trigger_blade_w);
-                translate(trigger_blade_tip2) circle(d = trigger_blade_w);
+                translate(trigger_blade_tip)  circle(d = trigger_blade_w);
             }
             // actuator arm: hub -> pot engagement pad
             hull() {
@@ -592,7 +587,7 @@ module spring_bore(side) {
 // the wall and swing. Spans from the pivot out past the exit point (for swing
 // clearance) with extra opening toward LOWER Z for the blade's downward sweep.
 // Slightly wider than the blade, spanning the trigger thickness + clearance.
-trigger_throat_ext    = 6.0;    // extension past the exit along the blade dir
+trigger_throat_ext    = 11.0;   // extension past the exit along the blade dir (increased by 5mm total)
 trigger_throat_lowext = 8.0;    // extra opening toward lower Z (blade swing)
 module trigger_throat_cut() {
     slot_w = trigger_blade_w + 3;      // clearance around the blade

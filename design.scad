@@ -522,7 +522,7 @@ module trigger_lever() {
 // for a short metal pivot rod captured between the halves. The trigger's hub
 // (trigger_thick wide, centred on Y=0) rotates in the gap between the bosses.
 pivot_boss_dia  = 10.0;               // pivot boss diameter
-pivot_hub_gap   = trigger_thick/2 + 0.5;  // Y where the boss stops (clear of hub)
+pivot_hub_gap   = trigger_thick/2 + 0.5;  // Y where the boss stops (0.5mm clear of hub = 7mm total gap)
 pivot_bore_dia  = pivot_dia + 0.3;    // rod bore (running fit)
 pivot_bore_depth = 8.0;               // blind bore depth into each boss
 

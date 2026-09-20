@@ -206,9 +206,9 @@ orthographic view (best for judging profiles).
 ### ~~1. Identify the faces~~ ✓ DONE
 See [Face identification](#face-identification) section above.
 
-### 2. Narrower gap for the trigger lever
-- The trigger lever is currently 6mm thick, and the gap for it is 8mm wide.
-- I'd like to make the pivot hub 0.5mm taller on each side, reducing the slot width to 7mm
+### ~~2. Narrower gap for the trigger lever~~ ✓ DONE
+- The trigger lever is 6mm thick (`trigger_thick`), with 0.5mm clearance per side
+- Total slot width = 7mm (set by `pivot_hub_gap = trigger_thick/2 + 0.5`)
 
 ### 3. Refine the pot mounting
 - The linear pot now has different dimensions (see the BOM for details below)

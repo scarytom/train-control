@@ -248,9 +248,9 @@ See [Face identification](#face-identification) section above.
 ### ~~8. Shorten trigger slightly~~ ✓ DONE
 - ✓ Trigger blade shortened by 5mm (from 25mm to 20mm)
 
-### 9. Trigger slot.
-- The slot in the trigger is not wide enough for the lever on the pot
-- Make the slot 6.5mm wide
+### ~~9. Trigger slot.~~ ✓ DONE
+- ✓ Trigger fork slot widened to 6.5mm (was 4.5mm)
+- ✓ Slot length reduced to 2.5mm (was 6mm)
 
 ### 10. Grip size
 - The grip is too short to be held comfortably in adult hand.

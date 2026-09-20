@@ -512,8 +512,8 @@ trigger_arm_end   = let(
         trigger_arm_aim[1] + trigger_arm_extra*dz/L ];
 trigger_arm_w     = 10.0;       // arm width (fatter)
 trigger_arm_pad   = 12.0;       // diameter of the forked tip pad
-trigger_fork_slot = 4.5;        // fork slot width (fits the ~3mm pot lever)
-trigger_fork_len  = 6.0;        // elongated slot length along the arm (kept
+trigger_fork_slot = 6.5;        // fork slot width (fits the pot lever)
+trigger_fork_len  = 2.5;        // elongated slot length along the arm (kept
                                 // inside the tip pad so it's an enclosed hole)
 trigger_fork_pivot_ext = 7.0;   // extend the slot this far toward the pivot end
 

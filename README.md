@@ -139,7 +139,7 @@ trigger, internal pot mount, control panel and connector:
 - `spring_trigger_pos`, `spring_hole_dia` — spring hook hole in the armature.
 - `spring_anchor_pos`, `spring_boss_dia`, `spring_bore_depth` — body spring-anchor
   boss + blind bore for the captured rod.
-- `bf_TL`, `bf_TR`, `bf_BL`, `bf_BR` — the four corners of the Instrument Panel
+- `ip_TL`, `ip_TR`, `ip_BL`, `ip_BR` — the four corners of the Instrument Panel
   (ground-truth coordinates); the `panel_face_place(u,v)` frame is built from them.
 - `toggle_hole_dia`, `panel_drill` — toggle hole diameter / drill depth.
 - `toggle_master_u`, `toggle_master_v` — master switch position (upper row).

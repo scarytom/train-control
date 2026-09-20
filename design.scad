@@ -3,8 +3,8 @@
 // The ergonomic outline is embedded as a polygon() (simplified from Left.stl).
 //
 // COORDINATE CONVENTION:
-//   X = controller length (head/nose at -X, grip/butt at +X)
-//   Z = up/down (silhouette height)
+//   X = up/down along the controller length (top at -X, grip/butt at +X)
+//   Z = forward/backward (front at +Z, rear at -Z)
 //   Y = thickness (the two shell halves separate along Y=0)
 // ============================================================
 
@@ -22,9 +22,9 @@ taper_head_x = -20.0;  // X at/below which full head_thick is used (head side, -
 taper_grip_x =   5.0;  // X at/above which grip_thick is used (grip side, +X)
 
 // --- BUTTON CLEARANCE : room above the pot for buttons + wiring ---
-// Pushes the angled ~50deg button face (outline edge 30->31) OUTWARD along its
+// Pushes the angled ~50deg Instrument Panel (outline edge 30->31) OUTWARD along its
 // normal by this amount (see button_face_normal / button_move_idx below).
-button_clearance = 20.0;   // mm the button face is pushed out along its normal
+button_clearance = 20.0;   // mm the Instrument Panel is pushed out along its normal
 
 // ------------------------------------------------------------
 // 2D OUTLINE (embedded)
@@ -62,12 +62,12 @@ module outline_2d() {
     polygon(points = outline_points, paths = outline_paths);
 }
 
-// Outline with the blue button face pushed OUTWARD along its normal by
+// Outline with the Instrument Panel pushed OUTWARD along its normal by
 // button_clearance. The face is moved together with its corner-fillet points
 // (rear {28,29,30}, front {31,32,33,0}) so the curves travel with it and the
 // adjacent long edges re-angle smoothly instead of kinking.
 button_face_normal = [-0.772, -0.636];  // outward normal of edge 30->31 (~ -140.5 deg)
-button_move_idx    = [28, 29, 30, 31, 32, 33, 0];  // blue face + both corner fillets
+button_move_idx    = [28, 29, 30, 31, 32, 33, 0];  // Instrument Panel + both corner fillets
 
 function _moved(i) =
     (search(i, button_move_idx) != [])
@@ -218,33 +218,34 @@ pivot_dia = rod_dia;          // pivot pin uses the shared rod
 // lever, sweeping in the clear channel at the split (see pot_inset / pot_shift).
 trigger_exit = [-8, 3];       // [X, Z] where the trigger blade exits the throat
 // ------------------------------------------------------------
-// BUTTON / SWITCH PANEL on the raised blue face (edge 30->31, raised)
+// BUTTON / SWITCH PANEL on the Instrument Panel (edge 30->31, raised)
 // ------------------------------------------------------------
-// Frame built directly from the FOUR CORNERS of the blue face (given as ground
-// truth). No angle guessing. The local frame at the face:
+// Frame built directly from the FOUR CORNERS of the Instrument Panel (given as
+// ground truth). No angle guessing. The local frame at the face:
 //   +u (local X) = along the face edge in X-Z (toward the low-Z / +X corner)
 //   +v (local Y) = along the face's Y direction (~ global +Y; left half = +Y)
 //    n (local Z) = OUTWARD face normal (= uedge x uy). A child built at +Z sits
 //                  outside the face; cutters extend along -Z to drill inward.
 // panel_face_place(u,v) places a child at (u,v) mm on the face in this frame.
 // Corners: TL(+Y,Zhi) TR(+Y,Zlo) BL(-Y,Zhi) BR(-Y,Zlo)
-bf_TL = [ -85,  30,   0 ];
-bf_TR = [ -48,  30, -50 ];
-bf_BL = [ -88, -30,   0 ];
-bf_BR = [ -48, -30, -50 ];
+// ip_ = Instrument Panel
+ip_TL = [ -85,  30,   0 ];
+ip_TR = [ -48,  30, -50 ];
+ip_BL = [ -88, -30,   0 ];
+ip_BR = [ -48, -30, -50 ];
 
-bf_center = (bf_TL + bf_TR + bf_BL + bf_BR) / 4;
+ip_center = (ip_TL + ip_TR + ip_BL + ip_BR) / 4;
 function _unit(v) = v / norm(v);
-bf_uedge = _unit(((bf_TR - bf_TL) + (bf_BR - bf_BL)) / 2);  // +u toward Zlo/+X
-bf_uy    = _unit(((bf_TL - bf_BL) + (bf_TR - bf_BR)) / 2);  // +v toward +Y
-bf_n     = _unit(cross(bf_uedge, bf_uy));                   // outward normal
+ip_uedge = _unit(((ip_TR - ip_TL) + (ip_BR - ip_BL)) / 2);  // +u toward Zlo/+X
+ip_uy    = _unit(((ip_TL - ip_BL) + (ip_TR - ip_BR)) / 2);  // +v toward +Y
+ip_n     = _unit(cross(ip_uedge, ip_uy));                   // outward normal
 
 module panel_face_place(u, v) {
     // columns: local X = uedge, local Y = uy, local Z = outward normal, + origin
     multmatrix([
-        [ bf_uedge[0], bf_uy[0], bf_n[0], bf_center[0] ],
-        [ bf_uedge[1], bf_uy[1], bf_n[1], bf_center[1] ],
-        [ bf_uedge[2], bf_uy[2], bf_n[2], bf_center[2] ],
+        [ ip_uedge[0], ip_uy[0], ip_n[0], ip_center[0] ],
+        [ ip_uedge[1], ip_uy[1], ip_n[1], ip_center[1] ],
+        [ ip_uedge[2], ip_uy[2], ip_n[2], ip_center[2] ],
         [ 0,           0,        0,       1            ],
     ])
     translate([u, v, 0])
@@ -333,13 +334,13 @@ module thumb_button_cut() {
             cylinder(h = thumb_drill, d = thumb_dia, center = true);
 }
 
-// --- DX16 CONNECTOR (rear of the grip butt) ---
+// --- DX16 CONNECTOR (on the Grip Butt) ---
 // A DX16 aviation socket (16mm hole, 7mm thread, retained by an inner nut) needs
 // a FLAT full-thickness pad, not a split semicircle. So we mould a round flat
 // pad into the LEFT shell, centred on the Y=0 line, that crosses the split into
 // the RIGHT shell (which gets a matching recess). The socket goes in from
 // outside; the nut tightens on the inside flat.
-cable_pos    = [ 65, 12 ];          // [X, Z] centre on the rear of the grip butt
+cable_pos    = [ 65, 12 ];          // [X, Z] centre on the Grip Butt
 cable_normal = [ 0.78, 0, 0.62 ];   // outward surface normal (back-up)
 conn_hole_dia = 16.0;               // DX16 panel hole
 conn_pad_dia  = 19.0;               // flat mounting pad (round)

@@ -332,33 +332,49 @@ module panel_cuts_right() {
     meter_cutout(meter_u, meter_v_right);
 }
 
-// --- THUMB BUTTON (on the split) ---
-// A 6mm push button on the Y=0 split (halved into a semicircle in each shell),
-// drilled along the measured local surface normal at thumb_pos.
-thumb_pos      = [ 9, -32 ];        // [X, Z] centre on the surface
-thumb_dia      = 6.2;              // 6mm button + clearance (matches the toggles)
-thumb_normal   = [ -0.16, 0, -0.99 ];  // measured outward surface normal
-thumb_drill    = 10;               // just deep enough to clear the wall (spans
-                                   // ~5mm outside to ~5mm inside the surface)
+// --- HORN BUTTONS (on the Rear/Red face, one each side) ---
+// Two 5mm push buttons, one on each side of the controller (left and right shells),
+// mounted on the rear (red) face close to the tang top (cyan) face.
+// Rear face runs from point 0 [-30.17, -39.54] to point 1 [0.26, -31.57]
+// Face direction: dx = 30.43, dz = 7.97 -> normal perpendicular to face
+horn_pos       = [-6, -32];          // [X, Z] centre on the rear face (closer to cyan/tang top)
+horn_dia       = 5.0;                // mounting hole diameter (mm)
+horn_normal    = [0.253, 0, -0.967];  // outward normal perpendicular to rear face
+horn_drill     = 10;                 // drill depth
+horn_y_offset  = 11;                 // Y offset from centre (positive = left, negative = right)
 
-// Full round cutter (both halves see it; keep_left/keep_right split it into two
-// semicircles at Y=0). Built along the local normal, starting outside the face.
-module thumb_button_cut() {
-    // basis: align local +Z with thumb_normal
-    n  = thumb_normal / norm(thumb_normal);
-    // pick any in-plane axis: cross with global Y
+// Horn button hole for left shell (+Y side)
+module horn_button_cut_left() {
+    n  = horn_normal / norm(horn_normal);
     ax0 = cross([0,1,0], n);
     ax  = ax0 / norm(ax0);
     ay  = cross(n, ax);
-    translate([thumb_pos[0], 0, thumb_pos[1]])
+    translate([horn_pos[0], horn_y_offset, horn_pos[1]])
         multmatrix([
             [ ax[0], ay[0], n[0], 0 ],
             [ ax[1], ay[1], n[1], 0 ],
             [ ax[2], ay[2], n[2], 0 ],
             [ 0,     0,     0,    1 ],
         ])
-        translate([0, 0, 5 - thumb_drill/2])
-            cylinder(h = thumb_drill, d = thumb_dia, center = true);
+        translate([0, 0, 5 - horn_drill/2])
+            cylinder(h = horn_drill, d = horn_dia, center = true);
+}
+
+// Horn button hole for right shell (-Y side)
+module horn_button_cut_right() {
+    n  = horn_normal / norm(horn_normal);
+    ax0 = cross([0,1,0], n);
+    ax  = ax0 / norm(ax0);
+    ay  = cross(n, ax);
+    translate([horn_pos[0], -horn_y_offset, horn_pos[1]])
+        multmatrix([
+            [ ax[0], ay[0], n[0], 0 ],
+            [ ax[1], ay[1], n[1], 0 ],
+            [ ax[2], ay[2], n[2], 0 ],
+            [ 0,     0,     0,    1 ],
+        ])
+        translate([0, 0, 5 - horn_drill/2])
+            cylinder(h = horn_drill, d = horn_dia, center = true);
 }
 
 // --- DX16 CONNECTOR (on the Grip Butt) ---
@@ -826,7 +842,7 @@ module left_shell() {
         spring_bore(1);
         trigger_throat_cut();
         panel_cuts_left();
-        thumb_button_cut();
+        horn_button_cut_left();
         connector_hole();
     }
 }
@@ -854,7 +870,7 @@ module right_shell() {
         spring_bore(-1);
         trigger_throat_cut();
         panel_cuts_right();
-        thumb_button_cut();
+        horn_button_cut_right();
         connector_recess();   // clearance for the left-shell pad crossing the seam
         connector_hole();
     }

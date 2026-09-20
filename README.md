@@ -227,11 +227,11 @@ See [Face identification](#face-identification) section above.
 ### ~~4. move the hub for the trigger spring~~ ✓ DONE
 - ✓ Moved spring anchor to [-24.5, -38.5] - near rear (red) face, in line with pot end
 
-### 5. Horn buttons
-- There will now be 2 horn buttons
-- One will be mounted in each side of the controller
-- See the BOM for the hole size required
-- The horn buttons will now be mounted in the rear (red) face, close to the tang top (cyan) face
+### ~~5. Horn buttons~~ ✓ DONE
+- ✓ Added 2 horn buttons, one on each side of the controller
+- ✓ 5mm mounting holes (per BOM)
+- ✓ Mounted on the rear (red) face, close to the tang top (cyan) face
+- ✓ Position: [-6, -32] X,Z with Y offset of ±11mm
 
 ### 6. power switch
 - The power switch will now be a slide switch not a toggle

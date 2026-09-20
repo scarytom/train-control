@@ -18,8 +18,8 @@ Recommended: continue in **`design.scad`** — it is a single self-contained fil
 
 ## Coordinate convention
 
-- **X** = along the controller length. Head / (former) finger-slot at **−X**, grip / butt at **+X**.
-- **Z** = up / down (the silhouette height).
+- **X** = up/down along the controller length. Top at **−X**, grip / butt at **+X**.
+- **Z** = forward / backward.  Front at **+Z**, rear at **−Z**
 - **Y** = thickness. The two shell halves separate along **Y**; the profile is centred on Y = 0.
 
 ## Face identification
@@ -57,7 +57,7 @@ trigger, internal pot mount, control panel and connector:
    (its path is no longer referenced). Its location is preserved as data (see below).
 3. **Thickness taper (Y)** — `head_thick = 60 mm` at the head, tapering to
    `grip_thick = 25 mm` at the grip, via `thickness_mask()`.
-4. **Raised button surface** — the angled ~50° "top" face (the button-mounting
+4. **Raised Instrument Panel** — the angled ~50° face (the switch/meter-mounting
    surface, outline edge 30→31) is pushed outward along its own normal by
    `button_clearance = 20 mm`, with its corner fillets travelling with it so it
    blends smoothly into the body.
@@ -83,18 +83,18 @@ trigger, internal pot mount, control panel and connector:
     The pivot pin and spring anchor share a 3 mm rod (`rod_dia`), each captured
     in blind-bore bosses. A return spring hooks a hole in the armature and a
     rod in a body anchor boss, pulling the trigger to rest.
-11. **Control panel** — holes drilled into the raised blue face along its normal
+11. **Instrument panel** — holes drilled into the **Instrument Panel** along its normal
     via a face frame built from the face's four corners (`panel_face_place`). The
     LEFT half has four 6 mm toggle holes (master on its own row; horn / reverse /
     lights in a row at 15 mm pitch); the RIGHT half has the LED battery-meter
     cutout (square 25.5 × 2.2 mm slot + two 3.5 mm end holes, 33 mm apart). All
     clear of the bolt bosses.
 12. **Thumb button** — a 6 mm push-button hole (`thumb_button_cut()`) on the
-    lower-front surface at `thumb_pos`, drilled along the local surface normal
+    **tang top** at `thumb_pos`, drilled along the local surface normal
     (`thumb_normal`). It sits ON the Y = 0 split, so it is halved into a matching
     semicircle in each shell.
 13. **DX16 connector** — a panel-mount aviation socket (16 mm hole, 7 mm thread,
-    inner retaining nut) on the rear of the grip butt at `cable_pos`, drilled
+    inner retaining nut) on the **Grip Butt** at `cable_pos`, drilled
     along the local surface normal. Because a threaded connector needs a flat
     full-thickness seat (not a split semicircle), it uses a moulded round **pad**
     (`connector_pad()`, Ø19, 2 mm proud + 3 mm in) on the LEFT shell that crosses
@@ -107,9 +107,9 @@ trigger, internal pot mount, control panel and connector:
 
 - `grip_thick`, `head_thick` — body thickness (Y) at grip / head.
 - `taper_head_x`, `taper_grip_x` — where the thickness taper starts/ends along X.
-- `button_clearance` — how far the button face is pushed out (room above the pot).
+- `button_clearance` — how far the Instrument Panel is pushed out (room above the pot).
 - `button_face_normal`, `button_move_idx` — direction and which outline points move
-  (the blue face + both corner fillets: `[28,29,30,31,32,33,0]`).
+  (the Instrument Panel + both corner fillets: `[28,29,30,31,32,33,0]`).
 - `grip_round` — edge-rounding radius (mm); `0` disables it.
 - `wall` — shell wall thickness (mm).
 - `screw_boss_pos` — list of `[X, Z]` boss/bolt locations (currently six).
@@ -139,7 +139,7 @@ trigger, internal pot mount, control panel and connector:
 - `spring_trigger_pos`, `spring_hole_dia` — spring hook hole in the armature.
 - `spring_anchor_pos`, `spring_boss_dia`, `spring_bore_depth` — body spring-anchor
   boss + blind bore for the captured rod.
-- `bf_TL`, `bf_TR`, `bf_BL`, `bf_BR` — the four corners of the blue panel face
+- `bf_TL`, `bf_TR`, `bf_BL`, `bf_BR` — the four corners of the Instrument Panel
   (ground-truth coordinates); the `panel_face_place(u,v)` frame is built from them.
 - `toggle_hole_dia`, `panel_drill` — toggle hole diameter / drill depth.
 - `toggle_master_u`, `toggle_master_v` — master switch position (upper row).
@@ -216,19 +216,19 @@ See [Face identification](#face-identification) section above.
 - The mounting box should be 30mm long x 15mm wide, and 18mm high.
 - In order to prevent the pot lifting, there should be 2 side panels that clip over the top of the pot to grip it at the edges on the top surface of the pot
 - The ends of the pot remain in the open, to allow wires to be soldered to the pins
-- The pot also needs to be moved closer to the XXXX face, to allow room for the spring
+- The pot also needs to be moved closer to the front (black) face, to allow room for the spring
 - The trigger pivot will need to move in the same direction so that it remains in line with the middle of the pot
 - The trigger slot will need to change to accomodate this.
 
 ### 3. move the hub for the trigger spring
 - The hub for the trigger spring should move in line with the end of the pot
-- The hub should be touching the XXXX face
+- The hub should be touching the rear (red) face
 
 ### 4. Horn buttons
 - There will now be 2 horn buttons
 - One will be mounted in each side of the controller
 - See the BOM for the hole size required
-- The horn buttons will now be mounted in the XXXX face
+- The horn buttons will now be mounted in the rear (red) face, close to the tang top (cyan) face
 
 ### 5. power switch
 - The power switch will now be a slide switch not a toggle
@@ -248,16 +248,16 @@ See [Face identification](#face-identification) section above.
 - The slot in the trigger is not wide enough for the lever on the pot
 - Make the slot 6.5mm wide
 
-### 9. Handle size
-- The handle is too short to be held comfortably in adult hand.
-- The handle needs to be around 25mm longer, extended toward the XXXX face
+### 9. Grip size
+- The grip is too short to be held comfortably in adult hand.
+- The grip needs to be around 25mm longer, extended toward the butt (yellow) face
 
 ### 10. socket mounting
 - the 15mm ring for the aviation socket is too wide to work.
 - The socket will now be mounted centrally in a 25mm x 25mm square of sheet metal
 - The metal will be 1mm thick
 - create a square hole with slots for this metal square to slide into
-- you will need to flare the bottom of the handle out slightly in the y-axis to accommodate this
+- you will need to flare the bottom of the butt out slightly in the y-axis to accommodate this
 
 ### 11. cable tidy
 - we will need to keep wires away from the moving trigger lever
@@ -270,7 +270,7 @@ See [Face identification](#face-identification) section above.
 - can we design a simple button cap that can be affixed to the buttons after they have been mounted in the controller
 
 ### 13. discuss joining the 2 halves
-- the butt joint we have between the 2 halves gives some flex around the joint, particularly on face XXXX
+- the joint we have between the 2 halves gives some flex around the joint, particularly on front (black) face
 - discuss ways to improve the joint
 
 # Circuit Design and Parts

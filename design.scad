@@ -476,7 +476,7 @@ trigger_fork_pivot_ext = 7.0;   // extend the slot this far toward the pivot end
 // captured in a blind-bore boss in the body (like the pivot rod).
 spring_trigger_pos = [-17, -5]; // [X,Z] spring hole in the armature
 spring_hole_dia    = 2.0;       // spring hook hole diameter
-spring_anchor_pos  = [0, -25];  // [X,Z] body anchor point (spring pulls to here)
+spring_anchor_pos  = [-24.5, -38.5];   // [X,Z] body anchor point - near rear (red) face, in line with pot end
 spring_rod_dia     = rod_dia;   // anchor rod uses the shared rod (same stock)
 spring_boss_dia    = 6.0;       // anchor boss diameter
 spring_bore_depth  = 8.0;       // blind bore depth into each anchor boss

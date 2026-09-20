@@ -224,9 +224,8 @@ See [Face identification](#face-identification) section above.
 - ✓ Trigger blade straightened with bend at [-10, 10], tip at [0, 25]
 - ✓ Throat cutout extended 5mm toward black face
 
-### 4. move the hub for the trigger spring
-- The hub for the trigger spring should move in line with the end of the pot
-- The hub should be touching the rear (red) face
+### ~~4. move the hub for the trigger spring~~ ✓ DONE
+- ✓ Moved spring anchor to [-24.5, -38.5] - near rear (red) face, in line with pot end
 
 ### 5. Horn buttons
 - There will now be 2 horn buttons

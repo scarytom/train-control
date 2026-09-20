@@ -224,55 +224,55 @@ See [Face identification](#face-identification) section above.
 - ✓ Trigger blade straightened with bend at [-10, 10], tip at [0, 25]
 - ✓ Throat cutout extended 5mm toward black face
 
-### 3. move the hub for the trigger spring
+### 4. move the hub for the trigger spring
 - The hub for the trigger spring should move in line with the end of the pot
 - The hub should be touching the rear (red) face
 
-### 4. Horn buttons
+### 5. Horn buttons
 - There will now be 2 horn buttons
 - One will be mounted in each side of the controller
 - See the BOM for the hole size required
 - The horn buttons will now be mounted in the rear (red) face, close to the tang top (cyan) face
 
-### 5. power switch
+### 6. power switch
 - The power switch will now be a slide switch not a toggle
 - See the BOM for panel cut-out requirements
 - The switch will remain on its own on the left side
 
-### 6. lights / reverse switch
+### 7. lights / reverse switch
 - We no longer need a horn select switch, so there are only two toggle switches on the top panel
 - These should occupy the top and bottom holes, with the middle hole filled in
 - Note the new hole size in the BOM, and the need for secondary holes for the locking washer
 
-### ~~7. Shorten trigger slightly~~ ✓ DONE
+### ~~8. Shorten trigger slightly~~ ✓ DONE
 - ✓ Trigger blade shortened by 5mm (from 25mm to 20mm)
 
-### 8. Trigger slot.
+### 9. Trigger slot.
 - The slot in the trigger is not wide enough for the lever on the pot
 - Make the slot 6.5mm wide
 
-### 9. Grip size
+### 10. Grip size
 - The grip is too short to be held comfortably in adult hand.
 - The grip needs to be around 25mm longer, extended toward the butt (yellow) face
 
-### 10. socket mounting
+### 11. socket mounting
 - the 15mm ring for the aviation socket is too wide to work.
 - The socket will now be mounted centrally in a 25mm x 25mm square of sheet metal
 - The metal will be 1mm thick
 - create a square hole with slots for this metal square to slide into
 - you will need to flare the bottom of the butt out slightly in the y-axis to accommodate this
 
-### 11. cable tidy
+### 12. cable tidy
 - we will need to keep wires away from the moving trigger lever
 - wires will run as along the inside of the handset, along the surfaces with the highest (and lowest) y values
 - please place some eyes to which cable ties can be attached in judicious places
 - feel free to suggest other cable management solutions that might work better
 
-### 12. button caps
+### 13. button caps
 - the 2 horn buttons have very small, hard-plastic cylinders to push, and these dig into the user's thumb
 - can we design a simple button cap that can be affixed to the buttons after they have been mounted in the controller
 
-### 13. discuss joining the 2 halves
+### 14. discuss joining the 2 halves
 - the joint we have between the 2 halves gives some flex around the joint, particularly on front (black) face
 - discuss ways to improve the joint
 

@@ -22,6 +22,30 @@ Recommended: continue in **`design.scad`** — it is a single self-contained fil
 - **Z** = up / down (the silhouette height).
 - **Y** = thickness. The two shell halves separate along **Y**; the profile is centred on Y = 0.
 
+## Face identification
+
+The controller outline has **10 named faces**, each identified by a colour in the
+diagram below. This terminology is used throughout the documentation and code.
+
+![Face Colours](ref/face_colours.png)
+
+| Face | Colour      | Points | Description                                              |
+|------|-------------|--------|----------------------------------------------------------|
+| 1    | Red         | 0→1    | **Rear Face** — back of the controller body              |
+| 2    | Cyan        | 1→5    | **Tang Top** — upper surface of the tang                 |
+| 3    | Orange      | 5→7    | **Tang Bottom** — lower surface of the tang              |
+| 4    | Indigo      | 7→14   | **Grip Rear** — back of the pistol grip                  |
+| 5    | Yellow      | 14→16  | **Grip Butt** — bottom/base of the grip                  |
+| 6    | Green       | 16→19  | **Grip Front** — front of the pistol grip                |
+| 7    | White       | 19→23  | **Trigger Throat** — opening where the trigger exits     |
+| 8    | Brown       | 23→27  | **Underbelly** — underside of the controller body        |
+| 9    | Black       | 27→30  | **Front Face** — front of the controller body            |
+| 10   | Magenta     | 30→0   | **Instrument Panel** — raised surface for switches/meter |
+
+The **Instrument Panel** (magenta) is pushed outward by `button_clearance = 20 mm`
+along its face normal to provide room for internal components. The adjacent corner
+fillets (points 28–29 and 31–33, 0) move with it to blend smoothly into the body.
+
 ## What the model produces
 
 `design.scad` produces a complete, print-ready **hollow two-part shell** with
@@ -178,12 +202,9 @@ orthographic view (best for judging profiles).
   renders / export.
 
 ## TODO
-### 1. Identify the faces
-- agree on a colour for each of the faces, so we can identify them
-- make a projection in the x-z plane, looking down the y-axis, and colour each face
-- I expect there to be 9 coloured faces
-- commit a PNG and document it in this README
-- I will then re-write the remaining TODOs to use this colour scheme.
+
+### ~~1. Identify the faces~~ ✓ DONE
+See [Face identification](#face-identification) section above.
 
 ### 2. Narrower gap for the trigger lever
 - The trigger lever is currently 6mm thick, and the gap for it is 8mm wide.

@@ -283,6 +283,16 @@ module panel_face_place(u, v) {
 toggle_hole_dia = 6.2;   // 6mm bushing + clearance
 panel_drill     = 30;    // how far the drill cylinder runs (through the wall)
 
+// Slide switch (power on/off) - replaces the master toggle
+// 2x 2.5mm fixing holes 19mm centre-to-centre
+// 4.5mm x 10mm slot central longways between fixing holes
+slide_fix_hole_dia = 2.5;   // fixing hole diameter
+slide_fix_spacing  = 19;    // centre-to-centre spacing of fixing holes
+slide_slot_len     = 10;    // slot length
+slide_slot_wid     = 4.5;   // slot width
+slide_switch_u     = 2;     // position along panel (u coordinate)
+slide_switch_v     = 20;    // position across panel (v coordinate)
+
 // The 4 toggles sit on the LEFT (+v) half of the face. They must stay clear of
 // the two bolt bosses that pass under the face at u=-25 and u=+29 (which span
 // the full Y), so all switches live in the clear window u in [-18, +22].
@@ -310,6 +320,20 @@ module toggle_hole(u, v) {
             cylinder(h = panel_drill, d = toggle_hole_dia, center = true);
 }
 
+// Slide switch cutout: central slot + two fixing holes
+module slide_switch_cutout(u, v) {
+    panel_face_place(u, v)
+        translate([0, 0, 5 - panel_drill/2]) {
+            // central slot (4.5mm x 10mm) - longways along u axis
+            cube([slide_slot_len, slide_slot_wid, panel_drill], center = true);
+            // two fixing holes 19mm apart along u axis
+            translate([ slide_fix_spacing/2, 0, 0])
+                cylinder(h = panel_drill, d = slide_fix_hole_dia, center = true);
+            translate([-slide_fix_spacing/2, 0, 0])
+                cylinder(h = panel_drill, d = slide_fix_hole_dia, center = true);
+        }
+}
+
 // LED battery-meter cutout: central slot + two end holes, on the face at meter_u.
 module meter_cutout(u, v) {
     panel_face_place(u, v)
@@ -322,9 +346,9 @@ module meter_cutout(u, v) {
         }
 }
 
-// All panel cuts for the LEFT half (the 4 toggles, in two rows).
+// All panel cuts for the LEFT half (slide switch + toggles).
 module panel_cuts_left() {
-    toggle_hole(toggle_master_u, toggle_master_v);   // master (upper row)
+    slide_switch_cutout(slide_switch_u, slide_switch_v);   // power on/off (upper row)
     for (u = toggle_row_u) toggle_hole(u, toggle_row_v);  // horn / reverse / lights
 }
 // All panel cuts for the RIGHT half (the LED meter).

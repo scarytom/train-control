@@ -233,10 +233,11 @@ See [Face identification](#face-identification) section above.
 - ✓ Mounted on the rear (red) face, close to the tang top (cyan) face
 - ✓ Position: [-6, -32] X,Z with Y offset of ±11mm
 
-### 6. power switch
-- The power switch will now be a slide switch not a toggle
-- See the BOM for panel cut-out requirements
-- The switch will remain on its own on the left side
+### ~~6. power switch~~ ✓ DONE
+- ✓ Changed from toggle to slide switch
+- ✓ 2x 2.5mm fixing holes, 19mm centre-to-centre
+- ✓ 4.5mm x 10mm central slot
+- ✓ Positioned on its own on the left side of the Instrument Panel
 
 ### 7. lights / reverse switch
 - We no longer need a horn select switch, so there are only two toggle switches on the top panel

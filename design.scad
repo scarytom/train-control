@@ -280,7 +280,9 @@ module panel_face_place(u, v) {
 }
 
 // --- switch / meter parameters ---
-toggle_hole_dia = 6.2;   // 6mm bushing + clearance
+toggle_hole_dia = 6.5;   // 6.5mm mounting hole (per new BOM)
+toggle_lug_dia  = 2.5;   // 2.5mm locking lug hole
+toggle_lug_offset = 6.5; // locking lug hole offset from main hole (centre-to-centre)
 panel_drill     = 30;    // how far the drill cylinder runs (through the wall)
 
 // Slide switch (power on/off) - replaces the master toggle
@@ -293,13 +295,13 @@ slide_slot_wid     = 4.5;   // slot width
 slide_switch_u     = 2;     // position along panel (u coordinate)
 slide_switch_v     = 20;    // position across panel (v coordinate)
 
-// The 4 toggles sit on the LEFT (+v) half of the face. They must stay clear of
+// The toggles sit on the LEFT (+v) half of the face. They must stay clear of
 // the two bolt bosses that pass under the face at u=-25 and u=+29 (which span
 // the full Y), so all switches live in the clear window u in [-18, +22].
-// Layout: MASTER on its own upper row; HORN / REVERSE / LIGHTS in a lower row.
-toggle_master_u   = 2;                 // master switch u (upper row)
+// Layout: SLIDE SWITCH on its own upper row; REVERSE / LIGHTS in a lower row (2 switches only).
+toggle_master_u   = 2;                 // master switch u (upper row) - now slide switch
 toggle_master_v   = 20;                // master switch v (nearer the +Y edge)
-toggle_row_u      = [ -13, 2, 17 ];    // horn / reverse / lights u (lower row, 15mm pitch)
+toggle_row_u      = [ -13, 17 ];       // reverse / lights u (lower row - top and bottom positions only)
 toggle_row_v      = 7;                 // lower-row v (nearer the split)
 
 // meter (right half)
@@ -313,11 +315,16 @@ meter_u         = 0;     // along-edge position of the meter centre
 // A single round toggle mounting hole. The drill starts slightly OUTSIDE the
 // face (local +Z = outward) and runs inward (-Z) through the wall, so it always
 // fully penetrates regardless of small origin offsets.
+// Includes a secondary 2.5mm hole for the locking lug, 6.5mm above the main hole.
 module toggle_hole(u, v) {
     panel_face_place(u, v)
-        // span local z from +5 (outside) to +5 - panel_drill (inside)
-        translate([0, 0, 5 - panel_drill/2])
+        translate([0, 0, 5 - panel_drill/2]) {
+            // main mounting hole
             cylinder(h = panel_drill, d = toggle_hole_dia, center = true);
+            // locking lug hole (6.5mm offset in -u direction / local -X)
+            translate([-toggle_lug_offset, 0, 0])
+                cylinder(h = panel_drill, d = toggle_lug_dia, center = true);
+        }
 }
 
 // Slide switch cutout: central slot + two fixing holes

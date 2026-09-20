@@ -239,10 +239,11 @@ See [Face identification](#face-identification) section above.
 - ✓ 4.5mm x 10mm central slot
 - ✓ Positioned on its own on the left side of the Instrument Panel
 
-### 7. lights / reverse switch
-- We no longer need a horn select switch, so there are only two toggle switches on the top panel
-- These should occupy the top and bottom holes, with the middle hole filled in
-- Note the new hole size in the BOM, and the need for secondary holes for the locking washer
+### ~~7. lights / reverse switch~~ ✓ DONE
+- ✓ Reduced from 3 toggles to 2 (removed horn select switch)
+- ✓ Toggles now occupy top and bottom positions (middle hole removed)
+- ✓ Updated hole size to 6.5mm (per BOM)
+- ✓ Added 2.5mm locking lug hole, 6.5mm above each main hole
 
 ### ~~8. Shorten trigger slightly~~ ✓ DONE
 - ✓ Trigger blade shortened by 5mm (from 25mm to 20mm)

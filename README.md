@@ -71,11 +71,12 @@ trigger, internal pot mount, control panel and connector:
    body at the Y = 0 plane into two mating halves.
 8. **Mate features** — six perimeter M3 bolt bosses (through-bolt + hex nut
    trap) with alignment spigots
-9. **Linear pot mount** — a solid cradle in the LEFT half holding a Bourns
-   PTA3043 (45×9×6.5 mm) along the recorded diagonal pot axis. The pot is inset
-   into the left half so only its 10 mm lever crosses the split (leaving a
-   channel for the trigger armature), seats against a ledge, and has a 3 mm
-   wire-exit gap at the pot's higher end.
+9. **Linear pot mount** — a solid box platform in the LEFT half holding a Bourns
+   PTA2043 (35.5×9.5×6.5 mm) along the recorded diagonal pot axis. The pot sits
+   on top of the mounting box (30×15×18 mm) with 4 blind holes for the fixing
+   pins (1.6 mm diameter, 4 mm deep), positioned per the datasheet (22.8 mm and
+   25.2 mm centre-to-centre spacing). Two side clips grip the pot's top edges to
+   prevent lifting. Ends are open for wire soldering access.
 10. **Trigger + pivot + return spring** — a trigger lever (`trigger_lever()`)
     pivoting at `pivot_pos`: a BENT finger blade exiting the throat up-and-forward
     at ~45°, then curling back to a finger tip near `[0, 30]`, and an actuator arm
@@ -117,12 +118,13 @@ trigger, internal pot mount, control panel and connector:
 - `screw_head_dia`, `screw_head_depth` — round bolt-head recess (left face).
 - `nut_af`, `nut_depth` — hex nut recess across-flats / depth (right face).
 - `spigot_dia`, `spigot_len`, `spigot_clear` — boss alignment spigot / fit.
-- `pot_len`, `pot_wid`, `pot_hgt` — PTA3043 body envelope (45 / 9 / 6.5 mm).
-- `pot_fit` — clearance around the pot body in the pocket.
+- `pot_len`, `pot_wid`, `pot_hgt` — PTA2043 body envelope (35.5 / 9.5 / 6.5 mm).
+- `pot_box_len`, `pot_box_wid`, `pot_box_hgt` — mounting box platform dimensions (30 / 15 / 18 mm).
+- `pot_pin_hole_dia`, `pot_pin_hole_depth` — blind hole for fixing pins (1.6 mm dia, 4 mm deep).
+- `pot_clip_thick`, `pot_clip_overlap` — side clip dimensions (1.5 mm thick, 1.5 mm overlap).
 - `pot_inset` — how far the pot top sits below the split (armature clearance).
 - `pot_shift` — shift along the pot long axis (+ve = toward the back/grip).
-- `pot_wall`, `pot_pin_gap`, `pot_lever_slot_w`, `pot_wire_gap_w` — cradle wall,
-  solder-pin clearance, lever slot width, wire-exit gap width.
+- `pot_lever_slot_w` — lever clearance slot width (6.5 mm, matches pot lever).
 - `rod_dia` — shared metal-rod diameter for BOTH the trigger pivot pin and the
   spring anchor rod (default 3 mm, a common steel dowel / silver-steel size).
 - `trigger_thick`, `trigger_hub_dia` — trigger lever thickness / pivot hub.
@@ -210,15 +212,17 @@ See [Face identification](#face-identification) section above.
 - The trigger lever is 6mm thick (`trigger_thick`), with 0.5mm clearance per side
 - Total slot width = 7mm (set by `pivot_hub_gap = trigger_thick/2 + 0.5`)
 
-### 3. Refine the pot mounting
-- The linear pot now has different dimensions (see the BOM for details below)
-- The mounting should consist of a solid box platform with 4 holes for the mounting lugs to push into.
-- The mounting box should be 30mm long x 15mm wide, and 18mm high.
-- In order to prevent the pot lifting, there should be 2 side panels that clip over the top of the pot to grip it at the edges on the top surface of the pot
-- The ends of the pot remain in the open, to allow wires to be soldered to the pins
-- The pot also needs to be moved closer to the front (black) face, to allow room for the spring
-- The trigger pivot will need to move in the same direction so that it remains in line with the middle of the pot
-- The trigger slot will need to change to accomodate this.
+### 3. Refine the pot mounting (PARTIAL - pot box done, trigger pivot still to do)
+- ✓ Updated pot dimensions to PTA2043: 35.5mm × 9.5mm × 6.5mm
+- ✓ Created solid box platform (30mm × 15mm × 18mm) with 4 blind holes for fixing pins
+- ✓ Pin holes are 1.6mm diameter (tight fit for 1.5mm pins), 4mm deep
+- ✓ Pin spacing: 22.8mm left side, 25.2mm right side (per datasheet)
+- ✓ Added 2 side clips to grip the pot top and prevent lifting
+- ✓ Ends remain open for wire soldering access
+- ✓ Pot moved 5mm closer to front (black) face (`pot_shift` reduced from 10 to 5)
+- ✓ Lever slot widened to 6.5mm (per TODO #8)
+- ⬜ The trigger pivot will need to move in the same direction so that it remains in line with the middle of the pot
+- ⬜ The trigger slot will need to change to accommodate this.
 
 ### 3. move the hub for the trigger spring
 - The hub for the trigger spring should move in line with the end of the pot

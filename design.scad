@@ -13,7 +13,7 @@ $fn = 48;
 // --- RENDER SELECTION ---
 // Options: "left_shell", "right_shell", "trigger", "export_stl",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "button_cap_test_plate";
+part_to_render = "partial_exploded_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)

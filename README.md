@@ -268,9 +268,11 @@ See [Face identification](#face-identification) section above.
 - ✓ Eyes use thickness_at_x() function to position correctly in tapered regions
 - feel free to suggest other cable management solutions that might work better
 
-### 13. button caps
-- the 2 horn buttons have very small, hard-plastic cylinders to push, and these dig into the user's thumb
-- can we design a simple button cap that can be affixed to the buttons after they have been mounted in the controller
+### ~~13. button caps~~ ✓ DONE
+- ✓ Created button_cap() module with rounded donut-rim top for comfort
+- ✓ Friction-fit socket for 2.5mm button stem, 3mm deep
+- ✓ Test plate with 8 caps at 4 hole sizes (2.3, 2.4, 2.5, 2.6mm) for fit testing
+- ✓ Render with part_to_render = "button_cap" or "button_cap_test_plate"
 
 ### 14. discuss joining the 2 halves
 - the joint we have between the 2 halves gives some flex around the joint, particularly on front (black) face

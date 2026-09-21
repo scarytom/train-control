@@ -888,14 +888,14 @@ nut_af           = 5.5;   // M3 nut width across flats (A/F)
 nut_across_corners = nut_af / cos(30);   // = ~6.35 mm, used for the hex recess
 nut_depth        = 2.6;   // nut thickness + a little (capture depth, right face)
 
-spigot_dia       = 5.0;   // male alignment spigot (on right boss)
+spigot_dia       = 6;   // male alignment spigot (on right boss)
 spigot_len       = 3.0;   // how far it crosses the split into the left half
 spigot_clear     = 0.2;   // fit clearance for the counterbore
 
 // [X, Z] screw/boss locations (in the outline plane). Placed at corners /
 // perimeter, kept CLEAR of the trigger<->pot armature path through the head
 // centre. Verified inside the body with margin.
-screw_boss_pos = [ [10, -13], [73, -10], [58, 13], [-31, 19], [-81, -3], [-45.5, -45.5] ];
+screw_boss_pos = [ [10, -13], [73, -9], [58, 12], [-31, 19], [-80.5, -3], [-45.5, -45.5] ];
 
 // One screw-boss column (solid), centred on Y=0, spanning the full thickness.
 module boss_column(p) {

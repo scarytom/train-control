@@ -252,16 +252,15 @@ See [Face identification](#face-identification) section above.
 - ✓ Trigger fork slot widened to 6.5mm (was 4.5mm)
 - ✓ Slot length reduced to 2.5mm (was 6mm)
 
-### 10. Grip size
-- The grip is too short to be held comfortably in adult hand.
-- The grip needs to be around 25mm longer, extended toward the butt (yellow) face
+### ~~10. Grip size~~ ✓ DONE
+- ✓ Extended grip by 25mm toward the butt (yellow) face
+- ✓ Adjusted screw boss positions for longer grip
 
-### 11. socket mounting
-- the 15mm ring for the aviation socket is too wide to work.
-- The socket will now be mounted centrally in a 25mm x 25mm square of sheet metal
-- The metal will be 1mm thick
-- create a square hole with slots for this metal square to slide into
-- you will need to flare the bottom of the butt out slightly in the y-axis to accommodate this
+### ~~11. socket mounting~~ ✓ DONE
+- ✓ Replaced round connector pad with square slot for 24mm x 20mm metal plate
+- ✓ Slot includes 1.3mm clearance for plate thickness
+- ✓ Inner cavity 22mm x 19mm x 8mm for connector body
+- ✓ Thickened butt wall to 6mm to accommodate slot
 
 ### 12. cable tidy
 - we will need to keep wires away from the moving trigger lever

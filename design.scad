@@ -13,7 +13,7 @@ $fn = 48;
 // --- RENDER SELECTION ---
 // Options: "left_shell", "right_shell", "trigger", "export_stl",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "partial_exploded_assembly";
+part_to_render = "closed_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -35,9 +35,9 @@ button_clearance = 20.0;   // mm the Instrument Panel is pushed out along its no
 outline_points = [
   [-30.17, -39.54], [0.26, -31.57], [5.49, -31.68], [11.58, -33.66],
   [13.32, -33.58], [14.57, -32.37], [18.05, -24.45], [22.6, -20.38],
-  [45.87, -15.85], [62.59, -10.8], [68.85, -8.08], [71.59, -5.88],
-  [73.74, -2.77], [74.46, 0.39], [73.97, 2.85], [58.71, 22.07],
-  [55.61, 23.47], [52.26, 22.74], [17.33, 8.76], [12.72, 6.1],
+  [70.87, -15.85], [87.59, -10.8], [93.85, -8.08], [96.59, -5.88],
+  [98.74, -2.77], [99.46, 0.39], [98.97, 2.85], [83.71, 22.07],
+  [80.61, 23.47], [77.26, 22.74], [17.33, 8.76], [12.72, 6.1],
   [6.95, 1.06], [1.48, -0.33], [-3.5, -0.13], [-6.68, 1.4],
   [-21.98, 20.46], [-25.57, 23.54], [-28.68, 24.7], [-35.32, 24.67],
   [-71.14, 13.34], [-72.45, 10.9], [-71.77, 8.39], [-33.8, -37.68],
@@ -414,13 +414,27 @@ module horn_button_cut_right() {
 // pad into the LEFT shell, centred on the Y=0 line, that crosses the split into
 // the RIGHT shell (which gets a matching recess). The socket goes in from
 // outside; the nut tightens on the inside flat.
-cable_pos    = [ 65, 12 ];          // [X, Z] centre on the Grip Butt
+cable_pos    = [ 87, 12 ];          // [X, Z] centre on the Grip Butt (moved with extended grip)
 cable_normal = [ 0.78, 0, 0.62 ];   // outward surface normal (back-up)
 conn_hole_dia = 16.0;               // DX16 panel hole
 conn_pad_dia  = 19.0;               // flat mounting pad (round)
 conn_pad_proud = 2.0;               // pad thickness proud of the surface (<= thread)
 conn_pad_y    = 5.0;                // total pad length (2mm proud + 3mm inward)
 conn_recess_clear = 0.3;            // clearance around the pad in the right-shell recess
+
+// Connector slot for metal plate mounting
+conn_slot_outer = [24, 21, 1.3];    // outer plate slot [X, Y, Z] with clearance
+conn_slot_inner = [22, 19, 8];      // inner block slot [X, Y, Z]
+conn_slot_offset = [3, 0, 1];       // offset from cable_pos along normal
+
+module connector_slot_cut() {
+    normal_place(cable_pos, cable_normal)
+        translate(conn_slot_offset) {
+            cube(conn_slot_outer, center = true);
+            cube(conn_slot_inner, center = true);
+        }
+}
+
 // Internal reinforcement collar: thickens the wall locally around the socket so
 // the Ø16 hole has more material to grip (strength). Reaches inward from the
 // surface; the hole bores through it. Crosses the seam like the pad.
@@ -733,6 +747,50 @@ module inner_cavity() {
         body_core(wall);
 }
 
+// Extra wall thickness on the butt (yellow) face only.
+// Adds material to the inside to bring total wall from 1.5mm to 4mm.
+// The cut plane is parallel to the butt face (points 14→16).
+butt_wall_extra = 4.5;  // extra thickness (total = wall + butt_wall_extra = 6mm)
+
+// Butt face runs from point 14 [98.97, 2.85] to point 16 [80.61, 23.47]
+// Face direction vector: [80.61-98.97, 23.47-2.85] = [-18.36, 20.62]
+// Outward normal (perpendicular, pointing away from body): [20.62, 18.36] normalized
+// The cut plane should be perpendicular to this normal (i.e., parallel to the face)
+butt_face_angle = atan2(23.47 - 2.85, 80.61 - 98.97);  // angle of butt face edge
+
+module butt_wall_thickener() {
+    intersection() {
+        // Thicken the cavity boundary in the butt region
+        difference() {
+            inner_cavity();
+            // Shrink the cavity further by the extra amount
+            if (grip_round > 0)
+                minkowski() {
+                    body_core(grip_round + wall + butt_wall_extra);
+                    sphere(r = grip_round, $fn = 24);
+                }
+            else
+                body_core(wall + butt_wall_extra);
+        }
+        // Only keep the butt (yellow) face region
+        // Hull a slab along the butt face, thick in Y to span the shell
+        hull() {
+            // Point 12 [98.74, -2.77] - extend into indigo corner
+            translate([98.74, 0, -2.77]) cube([1, 50, 1], center=true);
+            // Point 13 [99.46, 0.39]
+            translate([99.46, 0, 0.39]) cube([1, 50, 1], center=true);
+            // Point 14 [98.97, 2.85] in X,Z
+            translate([98.97, 0, 2.85]) cube([1, 50, 1], center=true);
+            // Point 15 [83.71, 22.07]
+            translate([83.71, 0, 22.07]) cube([1, 50, 1], center=true);
+            // Point 16 [80.61, 23.47]
+            translate([80.61, 0, 23.47]) cube([1, 50, 1], center=true);
+            // Point 17 [77.26, 22.74] - extend into green corner
+            translate([77.26, 0, 22.74]) cube([1, 50, 1], center=true);
+        }
+    }
+}
+
 module body_hollow() {
     difference() {
         body_solid();
@@ -782,7 +840,7 @@ spigot_clear     = 0.2;   // fit clearance for the counterbore
 // [X, Z] screw/boss locations (in the outline plane). Placed at corners /
 // perimeter, kept CLEAR of the trigger<->pot armature path through the head
 // centre. Verified inside the body with margin.
-screw_boss_pos = [ [10, -13], [63, -5], [48, 15], [-31, 18], [-80, -3], [-45, -45] ];
+screw_boss_pos = [ [10, -13], [73, -10], [58, 13], [-31, 18], [-80, -3], [-45, -45] ];
 
 // One screw-boss column (solid), centred on Y=0, spanning the full thickness.
 module boss_column(p) {
@@ -860,10 +918,7 @@ module left_shell() {
                 }
                 keep_left();
             }
-            // DX16 pad: full disc on the left shell, deliberately crossing the
-            // seam into -Y (the right shell has a matching recess).
-            connector_pad();
-            connector_reinforce();
+            intersection() { butt_wall_thickener(); keep_left(); }
         }
         screw_holes();
         head_recesses();
@@ -874,7 +929,7 @@ module left_shell() {
         trigger_throat_cut();
         panel_cuts_left();
         horn_button_cut_left();
-        connector_hole();
+        connector_slot_cut();
     }
 }
 
@@ -893,6 +948,7 @@ module right_shell() {
                 keep_right();
             }
             spigots();
+            intersection() { butt_wall_thickener(); keep_right(); }
         }
         screw_holes();
         nut_recesses();
@@ -902,8 +958,7 @@ module right_shell() {
         trigger_throat_cut();
         panel_cuts_right();
         horn_button_cut_right();
-        connector_recess();   // clearance for the left-shell pad crossing the seam
-        connector_hole();
+        connector_slot_cut();
     }
 }
 

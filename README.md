@@ -262,10 +262,10 @@ See [Face identification](#face-identification) section above.
 - ✓ Inner cavity 22mm x 19mm x 8mm for connector body
 - ✓ Thickened butt wall to 6mm to accommodate slot
 
-### 12. cable tidy
-- we will need to keep wires away from the moving trigger lever
-- wires will run as along the inside of the handset, along the surfaces with the highest (and lowest) y values
-- please place some eyes to which cable ties can be attached in judicious places
+### ~~12. cable tidy~~ ✓ DONE
+- ✓ Added 4 cable tie eyes (half-torus loops) on inner walls of both shells
+- ✓ Eyes positioned along cable route from butt to head, away from trigger
+- ✓ Eyes use thickness_at_x() function to position correctly in tapered regions
 - feel free to suggest other cable management solutions that might work better
 
 ### 13. button caps

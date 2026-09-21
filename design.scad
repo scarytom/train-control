@@ -13,7 +13,7 @@ $fn = 48;
 // --- RENDER SELECTION ---
 // Options: "left_shell", "right_shell", "trigger", "export_stl",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "partial_exploded_assembly";
+part_to_render = "right_shell";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -433,6 +433,61 @@ module connector_slot_cut() {
             cube(conn_slot_outer, center = true);
             cube(conn_slot_inner, center = true);
         }
+}
+
+// --- CABLE TIE EYES ---
+// Small loops on the inner wall for routing wires away from the trigger
+cable_eye_outer = 5.0;    // outer diameter of the eye
+cable_eye_inner = 2.5;    // inner diameter (hole for cable tie)
+cable_eye_height = 4.0;   // height of the loop off the wall
+cable_eye_base = 3.0;     // base attachment width
+
+// Function to calculate Y thickness at a given X position (matches thickness_mask)
+function thickness_at_x(x) = 
+    x <= taper_head_x ? head_thick :
+    x >= taper_grip_x ? grip_thick :
+    // Linear interpolation in the taper zone
+    head_thick + (grip_thick - head_thick) * (x - taper_head_x) / (taper_grip_x - taper_head_x);
+
+// Positions for cable tie eyes [X, Z] - placed on the inner walls at high/low Y
+// Route: butt -> along grip rear (indigo) -> up to head for switches/pot
+cable_eye_positions = [
+    [65, 2],   // grip rear, near butt
+    [40, -8],   // mid grip rear
+    [10, -22],   // lower grip, before trigger area
+    [-34, -36],  // head area, rear side
+];
+
+// Single cable tie eye - a half-torus (half donut) that sits on the wall
+// The flat side attaches to the wall, the loop extends inward
+module cable_eye() {
+    rotate_extrude(angle = 180, $fn = 24)
+        translate([cable_eye_outer/2, 0, 0])
+            circle(d = cable_eye_outer - cable_eye_inner, $fn = 16);
+}
+
+// Place all cable tie eyes on the left shell (inner wall at +Y side)
+module cable_eyes_left() {
+    for (pos = cable_eye_positions) {
+        th = thickness_at_x(pos[0]);
+        translate([pos[0], th/2 - wall, pos[1]])
+            rotate([-90, 0, 0])
+                rotate([-90, 0, 0])
+                    rotate([0, 120, 0])
+                        cable_eye();
+    }
+}
+
+// Place all cable tie eyes on the right shell (inner wall at -Y side)
+module cable_eyes_right() {
+    for (pos = cable_eye_positions) {
+        th = thickness_at_x(pos[0]);
+        translate([pos[0], -(th/2 - wall), pos[1]])
+            rotate([90, 0, 0])
+                rotate([-90, 0, 0])
+                    rotate([0, 240, 0])
+                        cable_eye();
+    }
 }
 
 // Internal reinforcement collar: thickens the wall locally around the socket so
@@ -919,6 +974,7 @@ module left_shell() {
                 keep_left();
             }
             intersection() { butt_wall_thickener(); keep_left(); }
+            cable_eyes_left();
         }
         screw_holes();
         head_recesses();
@@ -949,6 +1005,7 @@ module right_shell() {
             }
             spigots();
             intersection() { butt_wall_thickener(); keep_right(); }
+            cable_eyes_right();
         }
         screw_holes();
         nut_recesses();

@@ -13,7 +13,7 @@ $fn = 48;
 // --- RENDER SELECTION ---
 // Options: "left_shell", "right_shell", "trigger", "export_stl",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "right_shell";
+part_to_render = "button_cap_test_plate";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -406,6 +406,73 @@ module horn_button_cut_right() {
         ])
         translate([0, 0, 5 - horn_drill/2])
             cylinder(h = horn_drill, d = horn_dia, center = true);
+}
+
+// --- BUTTON CAP ---
+// Soft cap for horn buttons - fits over the 2.5mm button stem
+// Makes pressing more comfortable by spreading the force over a larger area
+button_cap_top_dia = 6.0;      // top pressing surface diameter
+button_cap_stem_dia = 2.5;     // inner diameter to fit over button stem
+button_cap_stem_depth = 3.0;   // how deep the stem socket is
+button_cap_top_thick = 1.5;    // thickness of the top surface
+button_cap_stem_wall = 1.0;    // wall thickness around the stem socket
+button_cap_rim_r = 1.0;        // radius of the rounded rim
+
+// Parameterized button cap - hole_dia overrides the default stem diameter
+module button_cap(hole_dia = button_cap_stem_dia - 0.2) {
+    difference() {
+        union() {
+            // Rounded rim - torus around the top edge
+            translate([0, 0, button_cap_stem_depth + button_cap_rim_r])
+                rotate_extrude($fn = 32)
+                    translate([button_cap_top_dia/2 - button_cap_rim_r, 0, 0])
+                        circle(r = button_cap_rim_r, $fn = 16);
+            // Flat top to fill the centre
+            translate([0, 0, button_cap_stem_depth + button_cap_rim_r])
+                cylinder(h = button_cap_rim_r, 
+                         d = button_cap_top_dia - 2*button_cap_rim_r, 
+                         center = false, $fn = 32);
+            // Top disc inside the rim (fills the donut hole)
+            translate([0, 0, button_cap_stem_depth])
+                cylinder(h = button_cap_rim_r, 
+                         d = button_cap_top_dia - 2*button_cap_rim_r, 
+                         center = false, $fn = 32);
+            // Tapered section from stem to top
+            translate([0, 0, button_cap_stem_depth])
+                cylinder(h = button_cap_rim_r, 
+                         d1 = button_cap_stem_dia + 2*button_cap_stem_wall,
+                         d2 = button_cap_top_dia, 
+                         center = false, $fn = 32);
+            // Stem socket outer wall
+            cylinder(h = button_cap_stem_depth, 
+                     d = button_cap_stem_dia + 2*button_cap_stem_wall, 
+                     center = false, $fn = 32);
+        }
+        // Stem socket hole
+        translate([0, 0, -0.1])
+            cylinder(h = button_cap_stem_depth + 0.1, 
+                     d = hole_dia, 
+                     center = false, $fn = 24);
+    }
+}
+
+// Test plate with 8 caps - pairs at 4 different hole diameters
+// Hole sizes: 2.3mm (tight), 2.4mm (medium), 2.5mm (exact), 2.6mm (loose)
+// Caps are flipped upside down for better printing (top surface on build plate)
+module button_cap_test_plate() {
+    hole_sizes = [2.3, 2.4, 2.5, 2.6];
+    spacing = 10;
+    cap_height = button_cap_stem_depth + 2*button_cap_rim_r;
+    
+    for (i = [0:3]) {
+        // Two caps per size, rotated 180 deg around X to print top-down
+        translate([i * spacing, 0, cap_height])
+            rotate([180, 0, 0])
+                button_cap(hole_dia = hole_sizes[i]);
+        translate([i * spacing, spacing, cap_height])
+            rotate([180, 0, 0])
+                button_cap(hole_dia = hole_sizes[i]);
+    }
 }
 
 // --- DX16 CONNECTOR (on the Grip Butt) ---
@@ -1026,6 +1093,10 @@ if (part_to_render == "left_shell") {
     right_shell();
 } else if (part_to_render == "trigger") {
     trigger_lever();
+} else if (part_to_render == "button_cap") {
+    button_cap();
+} else if (part_to_render == "button_cap_test_plate") {
+    button_cap_test_plate();
 }else if (part_to_render == "partial_exploded_assembly") {
     color("LightSteelBlue") translate([0,  6, 0]) left_shell();
     color("Crimson")        trigger_lever();

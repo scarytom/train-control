@@ -13,7 +13,7 @@ $fn = 48;
 // --- RENDER SELECTION ---
 // Options: "left_shell", "right_shell", "trigger", "export_stl",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "closed_assembly";
+part_to_render = "partial_exploded_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -824,7 +824,7 @@ module keep_right() { translate([-300, -300, -300]) cube([600, 300, 600]); } // 
 // RIGHT (outer) face has a HEXAGONAL recess that captures the nut so the bolt
 // can be tightened from the head side alone.
 screw_clear_dia  = 3.4;   // M3 clearance hole (through both halves)
-screw_boss_dia   = 8.0;   // boss outer diameter
+screw_boss_dia   = 10.0;  // boss outer diameter
 
 screw_head_dia   = 6.2;   // round recess diameter for the bolt head (left face)
 screw_head_depth = 2.5;   // depth of the head recess
@@ -833,14 +833,14 @@ nut_af           = 5.5;   // M3 nut width across flats (A/F)
 nut_across_corners = nut_af / cos(30);   // = ~6.35 mm, used for the hex recess
 nut_depth        = 2.6;   // nut thickness + a little (capture depth, right face)
 
-spigot_dia       = 4.5;   // male alignment spigot (on right boss)
+spigot_dia       = 5.0;   // male alignment spigot (on right boss)
 spigot_len       = 3.0;   // how far it crosses the split into the left half
 spigot_clear     = 0.2;   // fit clearance for the counterbore
 
 // [X, Z] screw/boss locations (in the outline plane). Placed at corners /
 // perimeter, kept CLEAR of the trigger<->pot armature path through the head
 // centre. Verified inside the body with margin.
-screw_boss_pos = [ [10, -13], [73, -10], [58, 13], [-31, 18], [-80, -3], [-45, -45] ];
+screw_boss_pos = [ [10, -13], [73, -10], [58, 13], [-31, 19], [-81, -3], [-45.5, -45.5] ];
 
 // One screw-boss column (solid), centred on Y=0, spanning the full thickness.
 module boss_column(p) {

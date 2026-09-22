@@ -962,7 +962,7 @@ spigot_clear     = 0.2;   // fit clearance for the counterbore
 // [X, Z] screw/boss locations (in the outline plane). Placed at corners /
 // perimeter, kept CLEAR of the trigger<->pot armature path through the head
 // centre. Verified inside the body with margin.
-screw_boss_pos = [ [10, -13], [73, -9], [58, 12], [-31, 19], [-80.5, -3], [-45.5, -45.5] ];
+screw_boss_pos = [ [10, -13], [70, -10], [68, 14.5], [-31, 19], [-80.5, -3], [-45.5, -45.5] ];
 
 // One screw-boss column (solid), centred on Y=0, spanning the full thickness.
 module boss_column(p) {

@@ -13,7 +13,7 @@ $fn = 48;
 // --- RENDER SELECTION ---
 // Options: "left_shell", "right_shell", "trigger", "button_caps",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "partial_exploded_assembly";
+part_to_render = "right_shell";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -538,10 +538,9 @@ module cable_eyes_left() {
     for (pos = cable_eye_positions) {
         th = thickness_at_x(pos[0]);
         translate([pos[0], th/2 - wall + 0.5, pos[1]])
-            rotate([-90, 0, 0])
-                rotate([-90, 0, 0])
-                    rotate([0, 120, 0])
-                        cable_eye();
+            rotate([-180, 0, 0])         // flip onto wall
+                rotate([0, 120, 0])      // orient loop opening
+                    cable_eye();
     }
 }
 
@@ -550,10 +549,8 @@ module cable_eyes_right() {
     for (pos = cable_eye_positions) {
         th = thickness_at_x(pos[0]);
         translate([pos[0], -(th/2 - wall + 0.5), pos[1]])
-            rotate([90, 0, 0])
-                rotate([-90, 0, 0])
-                    rotate([0, 240, 0])
-                        cable_eye();
+            rotate([0, 240, 0])      // orient loop opening
+                cable_eye();
     }
 }
 

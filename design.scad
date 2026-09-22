@@ -11,9 +11,9 @@
 $fn = 48;
 
 // --- RENDER SELECTION ---
-// Options: "left_shell", "right_shell", "trigger", "export_stl",
+// Options: "left_shell", "right_shell", "trigger", "button_caps",
 //          "partial_exploded_assembly", "exploded_assembly", "closed_assembly".
-part_to_render = "partial_exploded_assembly";
+part_to_render = "closed_assembly";
 
 // --- THICKNESS TAPER (Y) : slim grip, broad head ---
 grip_thick   = 25.0;   // Y thickness at the grip / trigger region (mm)
@@ -1088,16 +1088,14 @@ module right_shell() {
 
 // --- EXECUTION ---
 if (part_to_render == "left_shell") {
-    left_shell();
+   translate([0,0,30]) rotate([-90,0,0]) left_shell();
 } else if (part_to_render == "right_shell") {
-    right_shell();
+   translate([0,0,30]) rotate([90,0,0]) right_shell();
 } else if (part_to_render == "trigger") {
-    trigger_lever();
-} else if (part_to_render == "button_cap") {
-    button_cap();
-} else if (part_to_render == "button_cap_test_plate") {
+   translate([0,0,3]) rotate([90,0,0]) trigger_lever();
+} else if (part_to_render == "button_caps") {
     button_cap_test_plate();
-}else if (part_to_render == "partial_exploded_assembly") {
+} else if (part_to_render == "partial_exploded_assembly") {
     color("LightSteelBlue") translate([0,  0, 0]) left_shell();
     color("Crimson")        trigger_lever();
     // Second trigger rotated 35 degrees clockwise about pivot
@@ -1114,8 +1112,4 @@ if (part_to_render == "left_shell") {
     color("LightSteelBlue") left_shell();
     color("SlateGray")      right_shell();
     color("Crimson")        trigger_lever();
-} else if (part_to_render == "export_stl") {
-    translate([0,   0, 0]) translate([0,0,30]) rotate([-90,0,0]) left_shell();
-    translate([0,  95, 0]) translate([0,0,30]) rotate([ 90,0,0]) right_shell();
-    translate([0, 40, 0]) translate([0,0, 3]) rotate([ 90,0,0]) trigger_lever();
 }

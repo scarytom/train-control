@@ -1098,8 +1098,14 @@ if (part_to_render == "left_shell") {
 } else if (part_to_render == "button_cap_test_plate") {
     button_cap_test_plate();
 }else if (part_to_render == "partial_exploded_assembly") {
-    color("LightSteelBlue") translate([0,  6, 0]) left_shell();
+    color("LightSteelBlue") translate([0,  0, 0]) left_shell();
     color("Crimson")        trigger_lever();
+    // Second trigger rotated 35 degrees clockwise about pivot
+    color("Crimson", 0.5)
+        translate([pivot_pos[0], 0, pivot_pos[1]])
+            rotate([0, 35, 0])
+                translate([-pivot_pos[0], 0, -pivot_pos[1]])
+                    trigger_lever();
 } else if (part_to_render == "exploded_assembly") {
     color("LightSteelBlue") translate([0,  6, 0]) left_shell();
     color("SlateGray")      translate([0, -6, 0]) right_shell();
